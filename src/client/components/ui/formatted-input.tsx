@@ -14,10 +14,9 @@ type Formatter<F> = {
 }
 
 /*
- * On each keystroke:
- * - We track raw user input and display that while the field is focused.
- * - We store undefined in the form field if it cannot be parsed, otherwise store the parsed value.
- * When user leaves this field, we snap to the formatted parsed value if we could parse their input, otherwise we clear the display on this field
+ * We track raw user input with each keystroke and display that while form is focused.
+ * We store the raw input as a string in the form field if it cannot be parsed, otherwise store the parsed version in the background.
+ * When user leaves this field, we will snap to the formatted parsed value if we could parse their input, otherwise the field keeps the raw input for the form to show an error on.
  */
 function FormattedInput<T extends FieldValues, F>({ name, control, formatter }: { name: Path<T>, control: Control<T>, formatter: Formatter<F> }) {
     const { field } = useController({ name, control });
@@ -30,11 +29,13 @@ function FormattedInput<T extends FieldValues, F>({ name, control, formatter }: 
         onChange={e => {
             const val = e.target.value
             setRaw(val);
-            field.onChange(formatter.canParse(val) ? formatter.parse(val) : undefined)
+            field.onChange(formatter.canParse(val) ? formatter.parse(val) : val)
         }}
         onBlur={() => {
             field.onBlur();
-            setRaw(formatter.canParse(raw) ? formatter.format(formatter.parse(raw)) : "");
+            if (formatter.canParse(raw)) {
+                setRaw(formatter.format(formatter.parse(raw)));
+            }
         }}
     />
 }
