@@ -1,116 +1,38 @@
-import { $Enums, SplitMethod, TaxTipType } from '@prisma/client';
-import type { CreateExpenseInput, Expense } from "@/shared/schemas/expense";
+import { $Enums } from '@prisma/client';
+import { createExpenseSchema, type CreateExpenseInput, type Expense } from "@/shared/schemas/expense";
 import { useState } from "react";
 import type { Group } from "@/shared/schemas/group";
-import { toCents, toDollars } from "@/shared/utils/currency";
-import { assertUnreachable } from '@/shared/utils/type-helpers';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { MoneyInput, PercentOrMoneyInput } from '../ui/formatted-input';
 
-function toBackend(type: TaxTipType, value: string): number {
-    switch (type) {
-        case "FIXED": return toCents(parseFloat(value));
-        case "PERCENTAGE": return parseFloat(value) * 100;
-        default: assertUnreachable(type);
-    }
-}
-function toDisplay(type: TaxTipType, value: number): string {
-    switch (type) {
-        case "FIXED": return toDollars(value).toString();
-        case "PERCENTAGE": return (value / 100).toString();
-        default: assertUnreachable(type);
-    }
-}
-const splitValuetoBackend = (splitMethod: SplitMethod, value: string): { splitMethod: SplitMethod, splitValue: number | null } => (
-    {
-        splitMethod, splitValue: splitMethod === "EVEN" ? null : toBackend(splitMethod, value)
-    }
-);
-function splitValuetoDisplay(type: SplitMethod, value: number | undefined | null): string {
-    if (value == null || type == "EVEN") {
-        return ""
-    } else {
-        return toDisplay(type, value)
-    }
-}
+export default function ExpenseForm({ initialData, members, isPending, createExpense }: { initialData?: Expense; members: Group['members']; isPending: boolean; createExpense: (data: CreateExpenseInput) => void }) {
 
-
-export default function ExpenseForm({ initialData, members, isPending, onSubmit }: { initialData?: Expense; members: Group['members']; isPending: boolean; onSubmit: (data: CreateExpenseInput) => void }) {
-    const [name, setName] = useState(initialData?.name || "");
-    const [description, setDescription] = useState(initialData?.description || "");
+    const { register, handleSubmit, watch, control, setValue } = useForm<CreateExpenseInput>({
+        resolver: zodResolver(createExpenseSchema),
+        defaultValues: initialData ?? { payers: [], owers: [] }
+    })
 
     const [payerSplitType, setPayerSplitType] = useState(initialData?.payers[0]?.splitMethod || $Enums.SplitMethod.EVEN);
-    const [payerIds, setPayerIds] = useState(initialData?.payers.map(p => p.groupMemberId) || []);
-    const [payerIdToAmount, setPayerIdToAmount] = useState(
-        Object.fromEntries(initialData?.payers.map(p => [p.groupMemberId, splitValuetoDisplay(payerSplitType, p.splitValue)]) ?? [])
-    );
-
     const [owerSplitType, setOwerSplitType] = useState(initialData?.owers[0]?.splitMethod || $Enums.SplitMethod.EVEN);
-    const [owerIds, setOwerIds] = useState(initialData?.owers.map(p => p.groupMemberId) || []);
-    const [owerIdToAmount, setOwerIdToAmount] = useState(
-        Object.fromEntries(initialData?.owers.map(o => [o.groupMemberId, splitValuetoDisplay(owerSplitType, o.splitValue)]) ?? [])
-    );
-
-    const [baseAmount, setBaseAmount] = useState(initialData?.baseAmount ? toDisplay("FIXED", initialData?.baseAmount) : "");
-
-    const [taxType, setTaxType] = useState(initialData?.taxType || null);
-    const [taxAmount, setTaxAmount] = useState(taxType && initialData?.taxAmount ? toDisplay(taxType, initialData?.taxAmount) : "");
-
-    const [tipType, setTipType] = useState(initialData?.tipType || null);
-    const [tipAmount, setTipAmount] = useState(tipType && initialData?.tipAmount ? toDisplay(tipType, initialData?.tipAmount) : "");
-
-
-    const handleSubmit = (e: React.FormEvent) => {
-        const taxTypeAmount = taxType ? {
-            taxType, taxAmount: toBackend(taxType, taxAmount)
-        } : {};
-        const tipTypeAmount = tipType ? {
-            tipType, tipAmount: toBackend(tipType, tipAmount)
-        } : {};
-
-
-        e.preventDefault();
-        onSubmit({
-            name,
-            description,
-            baseAmount: toBackend("FIXED", baseAmount),
-            ...taxTypeAmount,
-            ...tipTypeAmount,
-            payers: payerIds.map(id => ({
-                groupMemberId: id,
-                ...splitValuetoBackend(payerSplitType, payerIdToAmount[id] || "0")
-            })),
-            owers: owerIds.map(id => ({
-                groupMemberId: id,
-                ...splitValuetoBackend(owerSplitType, owerIdToAmount[id] || "0")
-            })),
-        })
-    }
-
+    const payers = watch("payers");
+    const owers = watch("owers");
+    const taxType = watch("taxType");
+    const tipType = watch("tipType");
 
     return (
+        <form onSubmit={handleSubmit(createExpense)}>
 
-        <form onSubmit={handleSubmit}>
-
-            <label >Expense Name
-                <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
+            <label>Expense Name
+                <input {...register("name")} />
             </label>
 
-            <label >Expense Description
-                <input
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
+            <label>Expense Description
+                <input {...register("description")} />
             </label>
 
-            <label >Expense Amount
-                <input
-                    value={baseAmount}
-                    onChange={(e) => setBaseAmount(e.target.value)}
-                    required
-                />
+            <label>Expense Amount
+                <MoneyInput name={"baseAmount"} control={control} />
             </label>
 
             <p>Payment Split</p>
@@ -119,28 +41,35 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
                     <input
                         type="radio"
                         checked={payerSplitType == s}
-                        onChange={() => setPayerSplitType(s)}
+                        onChange={() => {
+                            setPayerSplitType(s);
+                            setValue("payers", payers.map(p => ({ ...p, splitMethod: s, splitValue: null })));
+                        }}
                     />
                     {s}
                 </label>)}
 
             <p>Payers</p>
-            {members.map(m =>
-                <label key={m.id} >
-                    <input
-                        type="checkbox"
-                        checked={payerIds.includes(m.id)}
-                        onChange={e => setPayerIds(e.target.checked ? [...payerIds, m.id] : payerIds.filter(id => id !== m.id))}
-                    />
-                    {m.name}
-
-                    {payerSplitType != "EVEN" && payerIds.includes(m.id) && <input
-                        value={payerIdToAmount[m.id] || ""}
-                        onChange={e => setPayerIdToAmount({ ...payerIdToAmount, [m.id]: e.target.value })}
-                        required
-                    />}
-                </label>
-            )}
+            {members.map(m => {
+                const index = payers.findIndex(p => p.groupMemberId === m.id);
+                const isChecked = index !== -1;
+                return (
+                    <label key={m.id}>
+                        <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={e => e.target.checked
+                                ? setValue("payers", [...payers, { groupMemberId: m.id, splitMethod: payerSplitType, splitValue: null }])
+                                : setValue("payers", payers.filter(p => p.groupMemberId !== m.id))
+                            }
+                        />
+                        {m.name}
+                        {payerSplitType !== "EVEN" && isChecked &&
+                            <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
+                        }
+                    </label>
+                );
+            })}
 
             <p>Owing Split</p>
             {Object.values($Enums.SplitMethod).map(s =>
@@ -148,29 +77,35 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
                     <input
                         type="radio"
                         checked={owerSplitType == s}
-                        onChange={() => setOwerSplitType(s)}
+                        onChange={() => {
+                            setOwerSplitType(s);
+                            setValue("owers", owers.map(o => ({ ...o, splitMethod: s, splitValue: null })));
+                        }}
                     />
                     {s}
                 </label>)}
 
             <p>Owers</p>
-            {members.map(m =>
-                <label key={m.id} >
-                    <input
-                        type="checkbox"
-                        checked={owerIds.includes(m.id)}
-                        onChange={e => setOwerIds(e.target.checked ? [...owerIds, m.id] : owerIds.filter(id => id !== m.id))}
-                    />
-                    {m.name}
-
-                    {owerSplitType != "EVEN" && owerIds.includes(m.id) && <input
-                        value={owerIdToAmount[m.id] || ""}
-                        onChange={e => setOwerIdToAmount({ ...owerIdToAmount, [m.id]: e.target.value })}
-                        required
-                    />}
-
-                </label>
-            )}
+            {members.map(m => {
+                const index = owers.findIndex(o => o.groupMemberId === m.id);
+                const isChecked = index !== -1;
+                return (
+                    <label key={m.id}>
+                        <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={e => e.target.checked
+                                ? setValue("owers", [...owers, { groupMemberId: m.id, splitMethod: owerSplitType, splitValue: null }])
+                                : setValue("owers", owers.filter(o => o.groupMemberId !== m.id))
+                            }
+                        />
+                        {m.name}
+                        {owerSplitType !== "EVEN" && isChecked &&
+                            <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
+                        }
+                    </label>
+                );
+            })}
 
             <p>Tax</p>
             {[...Object.values($Enums.TaxTipType), null].map(t =>
@@ -178,17 +113,13 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
                     <input
                         type="radio"
                         checked={taxType == t}
-                        onChange={() => setTaxType(t)}
+                        onChange={() => { setValue("taxType", t); setValue("taxAmount", null); }}
                     />
                     {t || "None"}
                 </label>)}
             {taxType &&
-                <label >Tax Amount
-                    <input
-                        value={taxAmount}
-                        onChange={(e) => setTaxAmount(e.target.value)}
-                        required
-                    />
+                <label>Tax Amount
+                    <PercentOrMoneyInput name="taxAmount" control={control} />
                 </label>}
 
             <p>Tip</p>
@@ -197,17 +128,13 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
                     <input
                         type="radio"
                         checked={tipType == t}
-                        onChange={() => setTipType(t)}
+                        onChange={() => { setValue("tipType", t); setValue("tipAmount", null); }}
                     />
                     {t || "None"}
                 </label>)}
             {tipType &&
-                <label >Tip Amount
-                    <input
-                        value={tipAmount}
-                        onChange={(e) => setTipAmount(e.target.value)}
-                        required
-                    />
+                <label>Tip Amount
+                    <PercentOrMoneyInput name="tipAmount" control={control} />
                 </label>}
 
             <button type='submit' disabled={isPending}>Submit</button>
