@@ -3,7 +3,7 @@ import { useGroup } from '../hooks/useGroups';
 import { Layout } from '../components/layout/Layout';
 import { Loading } from '../components/layout/Loading';
 import { useCreateSettlement } from '../hooks/useSettlements';
-import { toCents, toDollars } from '@/shared/utils/currency';
+import { MoneyInput } from '../components/ui/formatted-input';
 import { createSettlementSchema, type CreateSettlementInput } from '@/shared/schemas/settlement';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -19,13 +19,13 @@ function SettlementPageCore({ group }: { group: Group }) {
   const initialFromMemberId = searchParams.get("from") ?? undefined
   const initialToMemberId = searchParams.get("to") ?? undefined
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<CreateSettlementInput>({
+  const { register, handleSubmit, watch, control, formState: { errors } } = useForm<CreateSettlementInput>({
     resolver: zodResolver(createSettlementSchema),
     mode: "onBlur",
     defaultValues: {
       fromGroupMemberId: group.members.find(m => m.id === initialFromMemberId)?.id ?? undefined,
       toGroupMemberId: group.members.find(m => m.id === initialToMemberId)?.id ?? undefined,
-      amount: initialAmount ? toDollars(parseFloat(initialAmount)) : undefined
+      amount: initialAmount ? parseFloat(initialAmount) : undefined
     }
   });
 
@@ -50,8 +50,8 @@ function SettlementPageCore({ group }: { group: Group }) {
         </select>
         {errors.fromGroupMemberId?.message}
 
-        <input placeholder="0.00" {...register("amount", { setValueAs: v => toCents(parseFloat(v)) })} />
-        {errors.amount?.message}
+        <MoneyInput name="amount" control={control} />
+        {errors.amount && <p>{errors.amount.message}</p>}
 
         <select {...register("toGroupMemberId")}>
           <option value={undefined}> Choose a receiver </option>
