@@ -122,6 +122,7 @@ const expenseBaseSchema = expenseData.extend({
   description: z
     .string()
     .max(1000, 'Description must be less than 1000 characters')
+    .nullable()
     .optional(),
   payers: expenseParticipants('payers'),
   owers: expenseParticipants('owers'),

@@ -1,11 +1,13 @@
 import { toCents, toDollars } from "@/shared/utils/currency";
-import { useController, type Control } from "react-hook-form";
+import { useController, type Control, type FieldValues, type Path } from "react-hook-form";
 
-type Formatter<T> = {
-    format: (value: T) => string,
-    parse: (value: string) => T,
+type Formatter<F> = {
+    format: (value: F) => string,
+    parse: (value: string) => F,
 }
-function FormattedInput<T>({ name, control, formatter }: { name: string, control: Control, formatter: Formatter<T> }) {
+
+
+function FormattedInput<T extends FieldValues, F>({ name, control, formatter }: { name: Path<T>, control: Control<T>, formatter: Formatter<F> }) {
     const { field } = useController({ name, control })
     return <input
         {...field}
@@ -13,7 +15,7 @@ function FormattedInput<T>({ name, control, formatter }: { name: string, control
         onChange={e => field.onChange(formatter.parse(e.target.value))}
     />
 }
-export function MoneyInput({ name, control }: { name: string, control: Control }) {
+export function MoneyInput<T extends FieldValues>({ name, control }: { name: Path<T>, control: Control<T> }) {
     return <FormattedInput name={name} control={control}
         formatter={{
             format: (value: number) => toDollars(value).toString(),
@@ -21,3 +23,7 @@ export function MoneyInput({ name, control }: { name: string, control: Control }
         }}
     />
 }
+
+// percents and money are both divided by 100 before display and multiplied by 100 before storage
+// this just helps make the call site self explanatory
+export const PercentOrMoneyInput = MoneyInput;

@@ -11,7 +11,7 @@ function AddExpenseCore({ groupId, initialData, mutation }: { groupId: string; i
   const navigate = useNavigate();
   const { data: group, isLoading } = useGroup(groupId);
 
-  const onSubmit = (expense: CreateExpenseInput) => {
+  const createExpense = (expense: CreateExpenseInput) => {
     mutation.mutate(expense, { onSuccess: () => navigate(`/groups/${groupId}`) })
   }
 
@@ -23,7 +23,7 @@ function AddExpenseCore({ groupId, initialData, mutation }: { groupId: string; i
       {mutation.isError && <p>{mutation.error.message}</p>}
       <button onClick={() => navigate(`/groups/${groupId}`)}>Back</button>
       <h1>{initialData ? 'Edit' : 'Add'} Expense to {group.name}</h1>
-      <ExpenseForm initialData={initialData} members={group.members} isPending={mutation.isPending} onSubmit={onSubmit} />
+      <ExpenseForm initialData={initialData} members={group.members} isPending={mutation.isPending} onSubmit={createExpense} />
     </Layout>
   );
 
