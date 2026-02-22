@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { MoneyInput, PercentOrMoneyInput } from '../ui/formatted-input';
 
-export default function ExpenseForm({ initialData, members, isPending, createExpense }: { initialData?: Expense; members: Group['members']; isPending: boolean; createExpense: (data: CreateExpenseInput) => void }) {
+export default function ExpenseForm({ initialData, members, isPending, onSubmit }: { initialData?: Expense; members: Group['members']; isPending: boolean; onSubmit: (data: CreateExpenseInput) => void }) {
 
     const { register, handleSubmit, watch, control, setValue, formState: { errors } } = useForm<CreateExpenseInput>({
         resolver: zodResolver(createExpenseSchema),
@@ -23,7 +23,7 @@ export default function ExpenseForm({ initialData, members, isPending, createExp
     const tipType = watch("tipType");
 
     return (
-        <form onSubmit={handleSubmit(createExpense)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
 
             <label>Expense Name
                 <input {...register("name")} />
