@@ -15,11 +15,8 @@ export const createSettlementSchema = z
     fromGroupMemberId: z.string().uuid('Invalid from member ID'),
     toGroupMemberId: z.string().uuid('Invalid to member ID'),
     amount: money,
-  })
-  .refine(
-    (data) => {
-      return data.fromGroupMemberId !== data.toGroupMemberId;
-    },
+  }).refine(
+    data => data.fromGroupMemberId !== data.toGroupMemberId,
     { message: 'Cannot settle payment to yourself', path: ['toGroupMemberId'] }
   );
 

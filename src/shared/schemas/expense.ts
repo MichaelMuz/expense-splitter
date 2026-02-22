@@ -19,11 +19,18 @@ export const expenseParamsSchema = z.object({
 });
 
 // Payer and Ower schema
-export const expenseParticipant = z.object({
+const expenseParticipantUnrefined = z.object({
   groupMemberId: z.string().uuid('Invalid group member ID'),
   splitMethod: SplitMethodEnum,
   splitValue: z.number().int().nullable().optional(),
 });
+
+const splitValueRequired = tuple(
+  (p: z.infer<typeof expenseParticipantUnrefined>) => p.splitMethod === "EVEN" || p.splitValue != null,
+  { message: "Amount is required", path: ["splitValue"] }
+);
+
+export const expenseParticipant = expenseParticipantUnrefined.refine(...splitValueRequired);
 
 const expenseName = z
   .string()
@@ -78,18 +85,9 @@ function bothTaxTipOrNeither<K1 extends string, K2 extends string>(
 
 function fixedSumsCorrectly(participantType: 'payers' | 'owers') {
   return tuple(
-    (data: Partial<z.infer<typeof expenseBaseSchema>>) => {
+    (data: z.infer<typeof expenseBaseSchema>) => {
       const participants = data[participantType];
       // TODO: We can get rid of this if we eventually move to mixed splitability in the future
-      // require participant updates also update base amount to not break fixes split methods invariants
-      if (!!participants !== !!data.baseAmount) {
-        return false;
-      }
-      // they can be both undefined for an update
-      else if (!participants || !data.baseAmount) {
-        return true;
-      }
-
       if (participants.length > 0 && participants[0]?.splitMethod === 'FIXED') {
         const sum = participants.reduce(
           (sum, p) => sum + (p.splitValue || 0),
@@ -112,20 +110,10 @@ function fixedSumsCorrectly(participantType: 'payers' | 'owers') {
       return true;
     },
     {
-      message: `Fixed ${participantType} must sum correctly and require base amount to be specified`,
+      message: `Fixed ${participantType} must sum correctly`,
       path: [participantType],
     }
   );
-}
-
-function applyExpenseRefinements<
-  Io extends z.infer<typeof expenseBaseSchema> | Partial<z.infer<typeof expenseBaseSchema>>,
->(schema: z.ZodType<Io, z.ZodTypeDef, Io>) {
-  return schema
-    .refine(...bothTaxTipOrNeither('Tax', 'taxAmount', 'taxType'))
-    .refine(...bothTaxTipOrNeither('Tip', 'tipAmount', 'tipType'))
-    .refine(...fixedSumsCorrectly('payers'))
-    .refine(...fixedSumsCorrectly('owers'));
 }
 
 const expenseData = z.object({
@@ -141,20 +129,21 @@ const expenseBaseSchema = expenseData.extend({
   description: z
     .string()
     .max(1000, 'Description must be less than 1000 characters')
+    .nullable()
     .optional(),
   payers: expenseParticipants('payers'),
   owers: expenseParticipants('owers'),
 });
 
-export const createExpenseSchema = applyExpenseRefinements(expenseBaseSchema);
-export const updateExpenseSchema = applyExpenseRefinements(
-  expenseBaseSchema.partial()
-);
+export const createExpenseSchema = expenseBaseSchema
+  .refine(...bothTaxTipOrNeither('Tax', 'taxAmount', 'taxType'))
+  .refine(...bothTaxTipOrNeither('Tip', 'tipAmount', 'tipType'))
+  .refine(...fixedSumsCorrectly('payers'))
+  .refine(...fixedSumsCorrectly('owers'));
 
 export type ExpenseData = z.infer<typeof expenseData>;
 export type ExpenseParams = z.infer<typeof expenseParamsSchema>;
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
-export type UpdateExpenseInput = z.infer<typeof updateExpenseSchema>;
 export type PayerInput = z.infer<typeof expenseParticipant>;
 export type OwerInput = z.infer<typeof expenseParticipant>;
 
@@ -164,16 +153,16 @@ const groupMemberSchema = z.object({
   userId: z.string().uuid().nullable(),
 });
 
-const expenseParticipantWithAmount = expenseParticipant.extend({
+const expenseParticipantWithAmount = expenseParticipantUnrefined.extend({
   groupMember: groupMemberSchema,
   calculatedAmount: z.number().int(),
-});
+}).refine(...splitValueRequired);
 
 const expenseSchema = z.object({
   id: z.string().uuid(),
   groupId: z.string().uuid(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   baseAmount: z.number().int(),
   taxAmount: z.number().int().nullable(),
   taxType: TaxTipTypeEnum.nullable(),
