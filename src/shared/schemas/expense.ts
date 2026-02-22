@@ -19,11 +19,18 @@ export const expenseParamsSchema = z.object({
 });
 
 // Payer and Ower schema
-export const expenseParticipant = z.object({
+const expenseParticipantUnrefined = z.object({
   groupMemberId: z.string().uuid('Invalid group member ID'),
   splitMethod: SplitMethodEnum,
   splitValue: z.number().int().nullable().optional(),
 });
+
+const splitValueRequired = tuple(
+  (p: z.infer<typeof expenseParticipantUnrefined>) => p.splitMethod === "EVEN" || p.splitValue != null,
+  { message: "Amount is required", path: ["splitValue"] }
+);
+
+export const expenseParticipant = expenseParticipantUnrefined.refine(...splitValueRequired);
 
 const expenseName = z
   .string()
@@ -146,10 +153,10 @@ const groupMemberSchema = z.object({
   userId: z.string().uuid().nullable(),
 });
 
-const expenseParticipantWithAmount = expenseParticipant.extend({
+const expenseParticipantWithAmount = expenseParticipantUnrefined.extend({
   groupMember: groupMemberSchema,
   calculatedAmount: z.number().int(),
-});
+}).refine(...splitValueRequired);
 
 const expenseSchema = z.object({
   id: z.string().uuid(),

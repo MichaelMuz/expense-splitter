@@ -18,20 +18,23 @@ type Formatter<F> = {
  * We store the raw input as a string in the form field if it cannot be parsed, otherwise store the parsed version in the background.
  * When user leaves this field, we will snap to the formatted parsed value if we could parse their input, otherwise the field keeps the raw input for the form to show an error on.
  */
-function FormattedInput<T extends FieldValues, F>({ name, control, formatter }: { name: Path<T>, control: Control<T>, formatter: Formatter<F> }) {
+function FormattedInput<T extends FieldValues, F>({ name, control, formatter, ...rest }: { name: Path<T>, control: Control<T>, formatter: Formatter<F> } & React.InputHTMLAttributes<HTMLInputElement>) {
     const { field } = useController({ name, control });
     // field can be null/undefined if it is empty. Otherwise it contains valid data from db so we can format
     const [raw, setRaw] = useState<string>(() => field.value != null ? formatter.format(field.value) : "");
 
     return <input
+        {...rest}
         {...field}
         value={raw}
         onChange={e => {
-            const val = e.target.value
+            rest.onChange?.(e);
+            const val = e.target.value;
             setRaw(val);
             field.onChange(formatter.canParse(val) ? formatter.parse(val) : val)
         }}
-        onBlur={() => {
+        onBlur={e => {
+            rest.onBlur?.(e);
             field.onBlur();
             if (formatter.canParse(raw)) {
                 setRaw(formatter.format(formatter.parse(raw)));
@@ -40,14 +43,17 @@ function FormattedInput<T extends FieldValues, F>({ name, control, formatter }: 
     />
 }
 
-export function MoneyInput<T extends FieldValues>({ name, control }: { name: Path<T>, control: Control<T> }) {
-    return <FormattedInput name={name} control={control}
+export function MoneyInput<T extends FieldValues>({ name, control, ...rest }: { name: Path<T>, control: Control<T> } & React.InputHTMLAttributes<HTMLInputElement>) {
+    return (<FormattedInput
+        {...rest}
+        name={name}
+        control={control}
         formatter={{
             parse: value => toCents(parseFloat(value)),
             canParse: (value: string) => isFinite(parseFloat(value)),
             format: (value: number) => toDollars(value).toString(),
         }}
-    />
+    />)
 }
 
 // percents and money are both divided by 100 before display and multiplied by 100 before storage

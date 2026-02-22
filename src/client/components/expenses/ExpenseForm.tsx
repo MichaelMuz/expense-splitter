@@ -148,12 +148,12 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
                 </label>)}
             {tipType &&
                 <label>Tip Amount
-                    <PercentOrMoneyInput name="tipAmount" control={control} />
+                    <PercentOrMoneyInput name="tipAmount" control={control}/>
                     {errors.tipAmount && <p>{errors.tipAmount.message}</p>}
                 </label>}
             {errors.tipType && <p>{errors.tipType.message}</p>}
 
-            <button type='submit' disabled={isPending} onClick={() => {console.log("errors:");console.log(errors); console.log("form:");console.log(watch());}}>Submit</button>
+            <button type='submit' disabled={isPending} onClick={() => { console.log("errors:"); console.log(errors); console.log("form:"); console.log(watch()); }}>Submit</button>
         </form>
     );
 }
