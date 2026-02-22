@@ -17,7 +17,8 @@ export default function SignupPage() {
   const { signupMutation } = useAuth();
 
   const { register, handleSubmit, formState: { errors } } = useForm<SignupForm>({
-    resolver: zodResolver(signupFormSchema)
+    resolver: zodResolver(signupFormSchema),
+    mode: "onBlur"
   })
 
   const onSubmit = (data: SignupForm) => {

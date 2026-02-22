@@ -10,7 +10,8 @@ export default function LoginPage() {
   const { loginMutation } = useAuth();
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema)
+    resolver: zodResolver(loginSchema),
+    mode: "onBlur"
   })
 
   const onSubmit = (data: LoginInput) => {

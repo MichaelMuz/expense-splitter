@@ -15,7 +15,8 @@ function JoinGroupPageCore({ inviteCode, unclaimedMembers }: { inviteCode: strin
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<JoinInviteInput>({
     resolver: zodResolver(joinInviteSchema),
-    defaultValues: { type: canClaim ? "claim" : "new" }
+    defaultValues: { type: canClaim ? "claim" : "new" },
+    mode: "onBlur"
   })
   const type = watch("type")
 

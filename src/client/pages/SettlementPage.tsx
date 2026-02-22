@@ -21,6 +21,7 @@ function SettlementPageCore({ group }: { group: Group }) {
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<CreateSettlementInput>({
     resolver: zodResolver(createSettlementSchema),
+    mode: "onBlur",
     defaultValues: {
       fromGroupMemberId: group.members.find(m => m.id === initialFromMemberId)?.id ?? undefined,
       toGroupMemberId: group.members.find(m => m.id === initialToMemberId)?.id ?? undefined,

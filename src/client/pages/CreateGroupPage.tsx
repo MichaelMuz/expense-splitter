@@ -11,7 +11,8 @@ export default function CreateGroupPage() {
   const navigate = useNavigate();
   const createGroup = useCreateGroup();
   const { register, handleSubmit, formState: { errors } } = useForm<CreateGroupInput>({
-    resolver: zodResolver(createGroupSchema)
+    resolver: zodResolver(createGroupSchema),
+    mode: "onBlur"
   })
 
   const onSubmit = (data: CreateGroupInput) => {
