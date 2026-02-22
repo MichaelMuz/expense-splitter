@@ -8,11 +8,13 @@ import { MoneyInput, PercentOrMoneyInput } from '../ui/formatted-input';
 
 export default function ExpenseForm({ initialData, members, isPending, createExpense }: { initialData?: Expense; members: Group['members']; isPending: boolean; createExpense: (data: CreateExpenseInput) => void }) {
 
-    const { register, handleSubmit, watch, control, setValue } = useForm<CreateExpenseInput>({
+    const { register, handleSubmit, watch, control, setValue, formState: { errors } } = useForm<CreateExpenseInput>({
         resolver: zodResolver(createExpenseSchema),
         defaultValues: initialData ?? { payers: [], owers: [] }
     })
 
+    // if splitMethod were moved from per-entry to the expense level, payerSplitType/owerSplitType
+    // could be removed and the map-to-update-all-entries on radio change would not be needed
     const [payerSplitType, setPayerSplitType] = useState(initialData?.payers[0]?.splitMethod || $Enums.SplitMethod.EVEN);
     const [owerSplitType, setOwerSplitType] = useState(initialData?.owers[0]?.splitMethod || $Enums.SplitMethod.EVEN);
     const payers = watch("payers");
@@ -26,14 +28,17 @@ export default function ExpenseForm({ initialData, members, isPending, createExp
             <label>Expense Name
                 <input {...register("name")} />
             </label>
+            {errors.name?.message}
 
             <label>Expense Description
                 <input {...register("description")} />
             </label>
+            {errors.description?.message}
 
             <label>Expense Amount
                 <MoneyInput name={"baseAmount"} control={control} />
             </label>
+            {errors.baseAmount?.message}
 
             <p>Payment Split</p>
             {Object.values($Enums.SplitMethod).map(s =>
@@ -67,9 +72,11 @@ export default function ExpenseForm({ initialData, members, isPending, createExp
                         {payerSplitType !== "EVEN" && isChecked &&
                             <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
                         }
+                        {errors.payers?.[index]?.message}
                     </label>
                 );
             })}
+            {errors.payers?.message}
 
             <p>Owing Split</p>
             {Object.values($Enums.SplitMethod).map(s =>
@@ -103,9 +110,11 @@ export default function ExpenseForm({ initialData, members, isPending, createExp
                         {owerSplitType !== "EVEN" && isChecked &&
                             <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
                         }
+                        {errors.owers?.[index]?.message}
                     </label>
                 );
             })}
+            {errors.owers?.message}
 
             <p>Tax</p>
             {[...Object.values($Enums.TaxTipType), null].map(t =>
@@ -120,7 +129,9 @@ export default function ExpenseForm({ initialData, members, isPending, createExp
             {taxType &&
                 <label>Tax Amount
                     <PercentOrMoneyInput name="taxAmount" control={control} />
+                    {errors.taxAmount?.message}
                 </label>}
+            {errors.taxType?.message}
 
             <p>Tip</p>
             {[...Object.values($Enums.TaxTipType), null].map(t =>
@@ -135,7 +146,9 @@ export default function ExpenseForm({ initialData, members, isPending, createExp
             {tipType &&
                 <label>Tip Amount
                     <PercentOrMoneyInput name="tipAmount" control={control} />
+                    {errors.tipAmount?.message}
                 </label>}
+            {errors.tipType?.message}
 
             <button type='submit' disabled={isPending}>Submit</button>
         </form>
