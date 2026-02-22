@@ -10,7 +10,8 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
 
     const { register, handleSubmit, watch, control, setValue, formState: { errors } } = useForm<CreateExpenseInput>({
         resolver: zodResolver(createExpenseSchema),
-        defaultValues: initialData ?? { payers: [], owers: [] }
+        defaultValues: initialData ?? { payers: [], owers: [] },
+        mode: "onBlur"
     })
 
     // if splitMethod were moved from per-entry to the expense level, payerSplitType/owerSplitType
@@ -28,17 +29,17 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
             <label>Expense Name
                 <input {...register("name")} />
             </label>
-            {errors.name?.message}
+            {errors.name && <p>{errors.name.message}</p>}
 
             <label>Expense Description
                 <input {...register("description")} />
             </label>
-            {errors.description?.message}
+            {errors.description && <p>{errors.description.message}</p>}
 
             <label>Expense Amount
                 <MoneyInput name={"baseAmount"} control={control} />
             </label>
-            {errors.baseAmount?.message}
+            {errors.baseAmount && <p>{errors.baseAmount.message}</p>}
 
             <p>Payment Split</p>
             {Object.values($Enums.SplitMethod).map(s =>
@@ -72,11 +73,12 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
                         {payerSplitType !== "EVEN" && isChecked &&
                             <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
                         }
-                        {errors.payers?.[index]?.message}
+                        {errors.payers?.[index]?.splitValue && <p>{errors.payers[index].splitValue.message}</p>}
                     </label>
                 );
             })}
-            {errors.payers?.message}
+            {errors.payers?.root && <p>{errors.payers.root.message}</p>}
+            {errors.payers && <p>{errors.payers.message}</p>}
 
             <p>Owing Split</p>
             {Object.values($Enums.SplitMethod).map(s =>
@@ -110,11 +112,12 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
                         {owerSplitType !== "EVEN" && isChecked &&
                             <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
                         }
-                        {errors.owers?.[index]?.message}
+                        {errors.owers?.[index]?.splitValue && <p>{errors.owers[index].splitValue.message}</p>}
                     </label>
                 );
             })}
-            {errors.owers?.message}
+            {errors.owers?.root && <p>{errors.owers.root.message}</p>}
+            {errors.owers && <p>{errors.owers.message}</p>}
 
             <p>Tax</p>
             {[...Object.values($Enums.TaxTipType), null].map(t =>
@@ -129,9 +132,9 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
             {taxType &&
                 <label>Tax Amount
                     <PercentOrMoneyInput name="taxAmount" control={control} />
-                    {errors.taxAmount?.message}
+                    {errors.taxAmount && <p>{errors.taxAmount.message}</p>}
                 </label>}
-            {errors.taxType?.message}
+            {errors.taxType && <p>{errors.taxType.message}</p>}
 
             <p>Tip</p>
             {[...Object.values($Enums.TaxTipType), null].map(t =>
@@ -146,11 +149,11 @@ export default function ExpenseForm({ initialData, members, isPending, onSubmit 
             {tipType &&
                 <label>Tip Amount
                     <PercentOrMoneyInput name="tipAmount" control={control} />
-                    {errors.tipAmount?.message}
+                    {errors.tipAmount && <p>{errors.tipAmount.message}</p>}
                 </label>}
-            {errors.tipType?.message}
+            {errors.tipType && <p>{errors.tipType.message}</p>}
 
-            <button type='submit' disabled={isPending}>Submit</button>
+            <button type='submit' disabled={isPending} onClick={() => {console.log("errors:");console.log(errors); console.log("form:");console.log(watch());}}>Submit</button>
         </form>
     );
 }
