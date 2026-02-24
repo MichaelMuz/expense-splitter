@@ -33,12 +33,12 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
         </TabsList>
 
         <TabsContent value="expenses">
-          <button onClick={() => navigate(`/groups/${groupId}/expenses/new`)}>Add Expense</button>
+          <Button onClick={() => navigate(`/groups/${groupId}/expenses/new`)}>Add Expense</Button>
           <ExpenseList groupId={groupId} />
         </TabsContent>
 
         <TabsContent value="settlements">
-          <button onClick={() => navigate(`/groups/${groupId}/settlements/new`)}>Add Settlement</button>
+          <Button onClick={() => navigate(`/groups/${groupId}/settlements/new`)}>Add Settlement</Button>
           <SettlementList groupId={groupId} />
         </TabsContent>
 
