@@ -6,12 +6,10 @@ import { Layout } from '../components/layout/Layout';
 import { Loading } from '../components/layout/Loading';
 import { SettlementList } from '../components/settlements/SettlementList';
 import { BalancesList } from '../components/balances/BalancesList';
-
-type Tab = 'expenses' | 'balances' | 'members' | 'settlements';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
 function GroupDetailCore({ groupId }: { groupId: string }) {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>('expenses');
   const { data: group, isLoading, error } = useGroup(groupId);
   const [copied, setCopied] = useState(false);
 
@@ -30,35 +28,29 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
     <Layout>
       <h1>{group.name}</h1>
 
-      <nav>
-        <button onClick={() => setActiveTab('expenses')} disabled={activeTab === 'expenses'}>Expenses</button>
-        {' '}
-        <button onClick={() => setActiveTab('settlements')} disabled={activeTab === 'settlements'}>Settlements</button>
-        {' '}
-        <button onClick={() => setActiveTab('balances')} disabled={activeTab === 'balances'}>Balances</button>
-        {' '}
-        <button onClick={() => setActiveTab('members')} disabled={activeTab === 'members'}>Members</button>
-      </nav>
+      <Tabs defaultValue="expenses" >
+        <TabsList>
+          <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          <TabsTrigger value="settlements">Settlements</TabsTrigger>
+          <TabsTrigger value="balances">Balances</TabsTrigger>
+          <TabsTrigger value="members">Members</TabsTrigger>
+        </TabsList>
 
-      {activeTab === 'expenses' && (
-        <div>
+        <TabsContent value="expenses">
           <button onClick={() => navigate(`/groups/${groupId}/expenses/new`)}>Add Expense</button>
           <ExpenseList groupId={groupId} />
-        </div>
-      )}
+        </TabsContent>
 
-      {activeTab === 'settlements' && (
-        <div>
+        <TabsContent value="settlements">
           <button onClick={() => navigate(`/groups/${groupId}/settlements/new`)}>Add Settlement</button>
           <SettlementList groupId={groupId} />
-        </div>
-      )}
+        </TabsContent>
 
-      {activeTab === 'balances' &&
-        <BalancesList groupId={groupId} members={group.members} />}
+        <TabsContent value="balances">
+          <BalancesList groupId={groupId} members={group.members} />
+        </TabsContent>
 
-      {activeTab === 'members' && (
-        <div>
+        <TabsContent value="members">
           <h2>Members</h2>
           Invite code: {inviteUrl}
           <button onClick={copyOnClick}>{copied ? "Copied" : "Copy"}</button>
@@ -71,8 +63,8 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
               </li>
             ))}
           </ul>
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
     </Layout>
   );
 
