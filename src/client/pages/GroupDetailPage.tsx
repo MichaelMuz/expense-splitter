@@ -8,6 +8,7 @@ import { SettlementList } from '../components/settlements/SettlementList';
 import { BalancesList } from '../components/balances/BalancesList';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Button } from '../components/ui/button';
+import { toast } from "sonner";
 
 function GroupDetailCore({ groupId }: { groupId: string }) {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
         <TabsContent value="members">
           <h2>Members</h2>
           Invite code: {inviteUrl}
-          <Button variant="outline" size="icon" > <Copy /></Button>
+          <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(inviteUrl); toast("Copied!") }} > <Copy /></Button>
           <ul>
             {group.members.map((m) => (
               <li key={m.id}>
