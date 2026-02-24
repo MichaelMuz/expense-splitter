@@ -13,10 +13,15 @@ import GroupDetailPage from './pages/GroupDetailPage';
 import AddExpensePage from './pages/AddExpensePage';
 import SettlementPage from './pages/SettlementPage';
 import { Toaster } from './components/ui/sonner';
+import { ThemeProvider } from 'next-themes';
 
 function App() {
   return (
-    <>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+    >
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -88,7 +93,7 @@ function App() {
         </AuthProvider>
       </BrowserRouter>
       <Toaster />
-    </>
+    </ThemeProvider>
   );
 }
 
