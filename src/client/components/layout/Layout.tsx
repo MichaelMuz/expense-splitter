@@ -5,7 +5,7 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div>
       <Header />
-      <main>{children}</main>
+      <main className="max-w-2xl mx-auto px-4 py-6">{children}</main>
     </div>
   );
 }
