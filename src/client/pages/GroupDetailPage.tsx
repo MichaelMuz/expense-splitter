@@ -19,15 +19,17 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
 
   return (
     <Layout>
-      <h1>{group.name}</h1>
+      <h1 className='font-bold text-lg text-center'>{group.name}</h1>
 
       <Tabs defaultValue="expenses" >
-        <TabsList>
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
-          <TabsTrigger value="settlements">Settlements</TabsTrigger>
-          <TabsTrigger value="balances">Balances</TabsTrigger>
-          <TabsTrigger value="members">Members</TabsTrigger>
-        </TabsList>
+        <div className='flex justify-center'>
+          <TabsList>
+            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+            <TabsTrigger value="settlements">Settlements</TabsTrigger>
+            <TabsTrigger value="balances">Balances</TabsTrigger>
+            <TabsTrigger value="members">Members</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="expenses">
           <Button asChild>
