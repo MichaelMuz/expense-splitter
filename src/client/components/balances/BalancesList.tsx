@@ -6,6 +6,8 @@ import { calculateNetBalances } from "@/shared/utils/calculations";
 import { formatCurrency } from "@/shared/utils/currency";
 import { Link } from "react-router-dom";
 import { addQueryParams } from "@/client/lib/utils";
+import { Card } from '../ui/card';
+import { Button } from '../ui/button';
 
 
 export function BalancesList({ groupId, members }: { groupId: string; members: Group['members'] }) {
@@ -21,19 +23,24 @@ export function BalancesList({ groupId, members }: { groupId: string; members: G
     const netBalances = calculateNetBalances(expenses.data, settlements.data);
     const memberIdToName = new Map(members.map(m => [m.id, m.name]))
 
-    return (
-        <ul>
-            {Array.from(netBalances).map(([owedId, owerMap]) =>
-                Array.from(owerMap).map(([owerId, amount]) =>
-                    <li key={`${owedId}-${owerId}`}>
-                        {memberIdToName.get(owedId) || "ERROR"} is owed {formatCurrency(amount)} by {memberIdToName.get(owerId) || "ERROR"}
-                        <Link to={addQueryParams(`/groups/${groupId}/settlements/new`, { from: owerId, to: owedId, amount })}>
-                            Settle Up
-                        </Link>
-                    </li>
-                )
-            )}
-        </ul>
-    )
 
+    return (
+        <div className='flex flex-col gap-y-4 mt-4'>
+            {Array.from(netBalances).map(([owedId, owerMap]) => (
+                Array.from(owerMap).map(([owerId, amount]) =>
+                    <Card key={`${owedId}-${owerId}`} className='flex items-center px-4 py-2 justify-between'>
+                        <div className='flex flex-col'>
+                            <div>{memberIdToName.get(owerId) || "ERROR"} owes {memberIdToName.get(owedId) || "ERROR"}</div>
+                            <div className='text-sm text-muted-foreground'>{formatCurrency(amount)}</div>
+                        </div>
+                        <Button variant="outline" asChild>
+                            <Link to={addQueryParams(`/groups/${groupId}/settlements/new`, { from: owerId, to: owedId, amount })}>
+                                Settle up
+                            </Link>
+                        </Button>
+                    </Card>
+                )))
+            }
+        </div >
+    );
 }
