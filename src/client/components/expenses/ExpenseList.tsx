@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { formatCurrency } from '../../../shared/utils/currency';
 import { useExpenses, useDeleteExpense } from '../../hooks/useExpenses';
 import { Loading } from '../layout/Loading';
+import { Card } from '../ui/card';
+import { Button } from '../ui/button';
+import { Pencil, Trash2 } from 'lucide-react';
 
 export function ExpenseList({ groupId }: { groupId: string }) {
   const { data: expenses, isLoading, error } = useExpenses(groupId);
@@ -20,13 +23,15 @@ export function ExpenseList({ groupId }: { groupId: string }) {
   return (
     <ul>
       {expenses.map((expense) => (
-        <li key={expense.id}>
+        <Card key={expense.id}>
           {expense.name} — {formatCurrency(expense.totalAmount)}
-          {' '}
-          <button onClick={() => handleDelete(expense.id)}>Delete</button>
-          {' '}
-          <Link to={`/groups/${groupId}/expenses/${expense.id}/edit`} >Edit</Link>
-        </li>
+          <Button variant="outline" size="icon" onClick={() => handleDelete(expense.id)}>
+            <Trash2 />
+          </Button>
+          <Button variant="outline" size="icon" asChild>
+            <Link to={`/groups/${groupId}/expenses/${expense.id}/edit`} ><Pencil /></Link>
+          </Button>
+        </Card>
       ))
       }
     </ul >);
