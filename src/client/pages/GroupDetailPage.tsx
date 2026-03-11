@@ -1,5 +1,5 @@
 import { Copy } from "lucide-react";
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate, Link } from 'react-router-dom';
 import { ExpenseList } from '../components/expenses/ExpenseList';
 import { useGroup } from '../hooks/useGroups';
 import { Layout } from '../components/layout/Layout';
@@ -33,12 +33,16 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
         </TabsList>
 
         <TabsContent value="expenses">
-          <Button onClick={() => navigate(`/groups/${groupId}/expenses/new`)}>Add Expense</Button>
+          <Button asChild>
+            <Link to={`/groups/${groupId}/expenses/new`}>Add expense</Link>
+          </Button>
           <ExpenseList groupId={groupId} />
         </TabsContent>
 
         <TabsContent value="settlements">
-          <Button onClick={() => navigate(`/groups/${groupId}/settlements/new`)}>Add Settlement</Button>
+          <Button asChild>
+            <Link to={`/groups/${groupId}/settlements/new`}>Add settlement</Link>
+          </Button>
           <SettlementList groupId={groupId} />
         </TabsContent>
 
@@ -61,7 +65,7 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
           </ul>
         </TabsContent>
       </Tabs>
-    </Layout>
+    </Layout >
   );
 
 }
