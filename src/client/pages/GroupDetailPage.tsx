@@ -1,5 +1,4 @@
-import { Copy } from "lucide-react";
-import { useParams, useNavigate, Navigate, Link } from 'react-router-dom';
+import { useParams, Navigate, Link } from 'react-router-dom';
 import { ExpenseList } from '../components/expenses/ExpenseList';
 import { useGroup } from '../hooks/useGroups';
 import { Layout } from '../components/layout/Layout';
@@ -8,17 +7,15 @@ import { SettlementList } from '../components/settlements/SettlementList';
 import { BalancesList } from '../components/balances/BalancesList';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Button } from '../components/ui/button';
-import { toast } from "sonner";
+import { MembersList } from '../components/members/MembersList';
 
 function GroupDetailCore({ groupId }: { groupId: string }) {
-  const navigate = useNavigate();
   const { data: group, isLoading, error } = useGroup(groupId);
 
 
   if (isLoading) return <Loading name='group' />
   if (error || !group) return <Layout><p>Failed to load group.</p></Layout>;
 
-  const inviteUrl = `${window.location.origin}/groups/join/${group.inviteCode}`
 
   return (
     <Layout>
@@ -51,18 +48,7 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
         </TabsContent>
 
         <TabsContent value="members">
-          <h2>Members</h2>
-          Invite code: {inviteUrl}
-          <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(inviteUrl); toast("Copied!") }} > <Copy /></Button>
-          <ul>
-            {group.members.map((m) => (
-              <li key={m.id}>
-                {m.name}
-                {m.role === 'owner' ? ' (owner)' : ''}
-                {!m.userId ? ' (virtual)' : ''}
-              </li>
-            ))}
-          </ul>
+          <MembersList group={group} />
         </TabsContent>
       </Tabs>
     </Layout >
