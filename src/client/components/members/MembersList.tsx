@@ -11,11 +11,15 @@ export function MembersList({ groupMembers, inviteCode }: { groupMembers: Group[
     const inviteUrl = `${window.location.origin}/groups/join/${inviteCode}`
 
     return (
-        <div>
-            Invite code: {inviteUrl}
-            <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(inviteUrl); toast("Copied!") }} > <Copy /></Button>
-            <h2>Members</h2>
-            <div className='flex flex-col gap-y-4 mt-4'>
+        <div className="flex gap-y-4 mt-4 flex-col">
+            <Card className="flex items-center px-4 py-2 justify-between bg-muted">
+                <div className='flex flex-col'>
+                    <div>Invite code</div>
+                    <div className='text-sm text-muted-foreground'>{inviteUrl}</div>
+                </div>
+                <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(inviteUrl); toast("Copied!") }} > <Copy /></Button>
+            </Card>
+            <div className='flex flex-col gap-y-4'>
                 {groupMembers.map((m) => (
                     <Card key={m.id} className='flex items-center px-4 py-2 justify-between'>
                         {m.name}
