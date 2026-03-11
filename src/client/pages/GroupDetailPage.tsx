@@ -48,7 +48,7 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
         </TabsContent>
 
         <TabsContent value="members">
-          <MembersList group={group} />
+          <MembersList groupMembers={group.members} inviteCode={group.inviteCode} />
         </TabsContent>
       </Tabs>
     </Layout >
