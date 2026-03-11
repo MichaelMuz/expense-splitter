@@ -4,9 +4,9 @@ import { Button } from "../ui/button";
 import { toast } from "sonner";
 
 
-export function MembersList({ group }: { group: Group; }) {
+export function MembersList({ groupMembers, inviteCode }: { groupMembers: Group['members']; inviteCode: Group['inviteCode'] }) {
 
-    const inviteUrl = `${window.location.origin}/groups/join/${group.inviteCode}`
+    const inviteUrl = `${window.location.origin}/groups/join/${inviteCode}`
 
     return (
         <div>
@@ -14,7 +14,7 @@ export function MembersList({ group }: { group: Group; }) {
             <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(inviteUrl); toast("Copied!") }} > <Copy /></Button>
             <h2>Members</h2>
             <ul>
-                {group.members.map((m) => (
+                {groupMembers.map((m) => (
                     <li key={m.id}>
                         {m.name}
                         {m.role === 'owner' ? ' (owner)' : ''}
