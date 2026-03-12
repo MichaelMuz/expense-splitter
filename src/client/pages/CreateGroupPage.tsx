@@ -1,10 +1,14 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCreateGroup } from '../hooks/useGroups';
 import { Layout } from '../components/layout/Layout';
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createGroupSchema, type CreateGroupInput } from '@/shared/schemas/group';
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 
 
 export default function CreateGroupPage() {
@@ -19,20 +23,33 @@ export default function CreateGroupPage() {
     createGroup.mutate(data, { onSuccess: group => navigate(`/groups/${group.id}`) })
   };
 
+
   return (
-    <Layout>
-      <h1>Create New Group</h1>
-      {createGroup.isError && <p>{createGroup.error.message}</p>}
+    <Layout >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label>Group Name
-          <input {...register("name")} />
-      {errors.name && <p>{errors.name.message}</p>}
-        </label>
-        <button type="submit" disabled={createGroup.isPending}>
-          {createGroup.isPending ? 'Creating...' : 'Create Group'}
-        </button>
-        <button type="button" onClick={() => navigate('/groups')}>Cancel</button>
+        <Card className="w-full max-w-sm mx-auto">
+          <CardHeader>
+            <CardTitle>Create new group</CardTitle>
+            {createGroup.isError && <p>{createGroup.error.message}</p>}
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-6">
+              <label>Group name
+                <Input {...register("name")} />
+                {errors.name && <p>{errors.name.message}</p>}
+              </label>
+            </div>
+          </CardContent>
+          <CardFooter className="flex-col gap-2">
+            <Button type="submit" disabled={createGroup.isPending} className="w-full">
+              {createGroup.isPending ? 'Creating...' : 'Create'}
+            </Button>
+            <Button variant='secondary' disabled={createGroup.isPending} className="w-full" asChild>
+              <Link to='/groups'>Cancel</Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </form>
-    </Layout>
+    </Layout >
   );
 }
