@@ -223,6 +223,7 @@ Ideas for when the core is done:
 - Toast notifications — shadcn has a `Sonner` integration for success/error toasts (`npx shadcn@latest add sonner`)
 - Mobile responsiveness — Tailwind's `sm:`, `md:`, `lg:` prefixes for responsive breakpoints
 - Dark mode — your shadcn CSS already has `.dark` variables defined, just need a toggle
+- Retrofit existing forms (Login, Signup, CreateGroup) to use shadcn `Field`/`FieldLabel`/`FieldError` + `Controller` for consistent error display and accessibility
 
 ---
 
