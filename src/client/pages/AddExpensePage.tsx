@@ -20,13 +20,9 @@ function AddExpenseCore({ groupId, initialData, mutation }: { groupId: string; i
 
   return (
     <Layout>
-      {mutation.isError && <p>{mutation.error.message}</p>}
-      <button onClick={() => navigate(`/groups/${groupId}`)}>Back</button>
-      <h1>{initialData ? 'Edit' : 'Add'} Expense to {group.name}</h1>
-      <ExpenseForm initialData={initialData} members={group.members} isPending={mutation.isPending} onSubmit={createExpense} />
-    </Layout>
+      <ExpenseForm initialData={initialData} group={group} isPending={mutation.isPending} onSubmit={createExpense} errorMessage={mutation.isError ? mutation.error.message : undefined} />
+    </Layout >
   );
-
 }
 
 function EditExpense({ groupId, expenseId }: { groupId: string, expenseId: string }) {
