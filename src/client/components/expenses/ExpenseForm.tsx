@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { Checkbox } from '../ui/checkbox';
 
 export default function ExpenseForm({ initialData, group, isPending, onSubmit, errorMessage }: { initialData?: Expense; group: Group; isPending: boolean; onSubmit: (data: CreateExpenseInput) => void; errorMessage?: string }) {
 
@@ -70,10 +71,9 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                             const isChecked = index !== -1;
                             return (
                                 <label key={m.id}>
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
                                         checked={isChecked}
-                                        onChange={e => e.target.checked
+                                        onCheckedChange={checked => checked
                                             ? setValue("payers", [...payers, { groupMemberId: m.id, splitMethod: payerSplitType, splitValue: null }])
                                             : setValue("payers", payers.filter(p => p.groupMemberId !== m.id))
                                         }
@@ -107,10 +107,9 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                             const isChecked = index !== -1;
                             return (
                                 <label key={m.id}>
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
                                         checked={isChecked}
-                                        onChange={e => e.target.checked
+                                        onCheckedChange={checked => checked
                                             ? setValue("owers", [...owers, { groupMemberId: m.id, splitMethod: owerSplitType, splitValue: null }])
                                             : setValue("owers", owers.filter(o => o.groupMemberId !== m.id))
                                         }
@@ -131,7 +130,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         <RadioGroup value={taxType} onValueChange={(t: $Enums.TaxTipType | "NONE") => { setValue("taxType", t === "NONE" ? null : t); setValue("taxAmount", null); }}>
                             {[...Object.values($Enums.TaxTipType), null].map(t =>
                                 <label key={t}>
-                                    <RadioGroupItem value={t ?? "NONE"}/>
+                                    <RadioGroupItem value={t ?? "NONE"} />
                                     {t || "None"}
                                 </label>)}
                         </RadioGroup>
@@ -147,7 +146,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         <RadioGroup value={tipType} onValueChange={(t: $Enums.TaxTipType | "NONE") => { setValue("tipType", t === "NONE" ? null : t); setValue("tipAmount", null); }}>
                             {[...Object.values($Enums.TaxTipType), null].map(t =>
                                 <label key={t}>
-                                    <RadioGroupItem value={t ?? "NONE"}/>
+                                    <RadioGroupItem value={t ?? "NONE"} />
                                     {t || "None"}
                                 </label>)}
                         </RadioGroup>
