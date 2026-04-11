@@ -6,7 +6,7 @@ import { Loading } from './Loading';
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) return <Loading />
+  if (isLoading) return <Loading fullPage />
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }

@@ -15,7 +15,7 @@ function AddExpenseCore({ groupId, initialData, mutation }: { groupId: string; i
     mutation.mutate(expense, { onSuccess: () => navigate(`/groups/${groupId}`) })
   }
 
-  if (isLoading) return <Loading name="group" />;
+  if (isLoading) return <Loading name="group" fullPage />;
   else if (!group) return <Navigate to="/groups" replace />;
 
   return (
@@ -29,7 +29,7 @@ function EditExpense({ groupId, expenseId }: { groupId: string, expenseId: strin
   const expense = useExpense(groupId, expenseId)
   const updateExpense = useUpdateExpense(groupId, expenseId)
 
-  if (expense.isLoading) return <Loading name="expense" />
+  if (expense.isLoading) return <Loading name="expense" fullPage />
   else if (expense.isError || !expense.data) return <p>Error loading expense {expense.error?.message || ""}</p>
 
   return <AddExpenseCore groupId={groupId} initialData={expense.data} mutation={updateExpense} />

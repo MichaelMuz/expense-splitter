@@ -103,7 +103,7 @@ function SettlementPageCore({ group }: { group: Group }) {
 }
 function SettlementPageGuard({ groupId }: { groupId: string }) {
   const { data: group, isLoading } = useGroup(groupId);
-  if (isLoading) return <Loading name='group' />
+  if (isLoading) return <Loading name='group' fullPage />
   if (!group) return <Layout><p>Group not found.</p></Layout>;
   return <SettlementPageCore group={group} />
 

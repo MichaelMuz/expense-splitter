@@ -86,7 +86,7 @@ function JoinGroupPageGate({ inviteCode }: { inviteCode: string }) {
   const previewGroup = usePreviewGroup(inviteCode);
 
   if (previewGroup.error) return <p>{previewGroup.error.message}</p>;
-  if (previewGroup.isLoading) return <Loading name="group to join" />;
+  if (previewGroup.isLoading) return <Loading name="group to join" fullPage />;
   if (!previewGroup.data) return <p>Invalid Invite Code</p>;
 
   const unclaimedMembers = previewGroup.data.members.filter(m => !m.userId);

@@ -13,7 +13,7 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
   const { data: group, isLoading, error } = useGroup(groupId);
 
 
-  if (isLoading) return <Loading name='group' />
+  if (isLoading) return <Loading name='group' fullPage />
   if (error || !group) return <Layout><p>Failed to load group.</p></Layout>;
 
 
