@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Navigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, Navigate, useSearchParams, Link } from 'react-router-dom';
 import { useGroup } from '../hooks/useGroups';
 import { Layout } from '../components/layout/Layout';
 import { Loading } from '../components/layout/Loading';
@@ -6,8 +6,11 @@ import { useCreateSettlement } from '../hooks/useSettlements';
 import { MoneyInput } from '../components/ui/formatted-input';
 import { createSettlementSchema, type CreateSettlementInput } from '@/shared/schemas/settlement';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import type { Group } from '@/shared/schemas/group';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 
 
 function SettlementPageCore({ group }: { group: Group }) {
@@ -19,7 +22,7 @@ function SettlementPageCore({ group }: { group: Group }) {
   const initialFromMemberId = searchParams.get("from") ?? undefined
   const initialToMemberId = searchParams.get("to") ?? undefined
 
-  const { register, handleSubmit, watch, control, formState: { errors } } = useForm<CreateSettlementInput>({
+  const { handleSubmit, control, formState: { errors } } = useForm<CreateSettlementInput>({
     resolver: zodResolver(createSettlementSchema),
     mode: "onBlur",
     defaultValues: {
@@ -35,33 +38,63 @@ function SettlementPageCore({ group }: { group: Group }) {
 
   return (
     <Layout>
-      <h1>Record Settlement in {group.name}</h1>
-      <button onClick={() => navigate(`/groups/${group.id}`)}>Back</button>
-
-      <p> {createSettlement.isError && createSettlement.error.message}</p>
-
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Card className="w-full max-w-sm mx-auto">
 
-        <select {...register("fromGroupMemberId")}>
-          <option value={undefined}> Choose a sender </option>
-          {group.members.map(m =>
-            <option key={m.id} value={m.id}> {m.name} </option>
-          )}
-        </select>
-        {errors.fromGroupMemberId?.message}
+          <CardHeader>
+            <CardTitle>Record Settlement in {group.name}</CardTitle>
+            {createSettlement.isError && <p>{createSettlement.error.message}</p>}
+          </CardHeader>
+          <CardContent className='flex flex-col gap-3'>
 
-        <MoneyInput name="amount" control={control} />
-        {errors.amount && <p>{errors.amount.message}</p>}
+            <label>Sender
+              <Controller name="fromGroupMemberId" control={control} render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a sender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {group.members.map(m =>
+                      <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              )} />
+              {errors.fromGroupMemberId?.message}
+            </label>
 
-        <select {...register("toGroupMemberId")}>
-          <option value={undefined}> Choose a receiver </option>
-          {group.members.filter(m => m.id !== watch("fromGroupMemberId")).map(m =>
-            <option key={m.id} value={m.id}> {m.name} </option>
-          )}
-        </select>
-        {errors.toGroupMemberId?.message}
+            <label>Amount
+              <MoneyInput name="amount" control={control} />
+              {errors.amount && <p>{errors.amount.message}</p>}
+            </label>
 
-        <button type='submit' disabled={createSettlement.isPending}> Submit </button>
+            <label>Receiver
+              <Controller name="toGroupMemberId" control={control} render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a receiver" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {group.members.map(m =>
+                      <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              )} />
+              {errors.toGroupMemberId?.message}
+            </label>
+
+          </CardContent>
+
+          <CardFooter className="flex-col gap-2">
+            <Button type="submit" disabled={createSettlement.isPending} className="w-full">
+              {createSettlement.isPending ? 'Creating...' : 'Create'}
+            </Button>
+            <Button variant='secondary' disabled={createSettlement.isPending} className="w-full" asChild>
+              <Link to='/groups/${group.id}'>Cancel</Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </form >
 
     </Layout >
