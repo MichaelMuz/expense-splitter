@@ -57,7 +57,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         <RadioGroup value={payerSplitType} onValueChange={(s: $Enums.SplitMethod) => {
                             setPayerSplitType(s);
                             setValue("payers", payers.map(p => ({ ...p, splitMethod: s, splitValue: null })));
-                        }} className='w-fit flex flex-col'>
+                        }} className='w-fit flex flex-col gap-1'>
                             {Object.values($Enums.SplitMethod).map(s =>
                                 <label key={s} className='flex items-center gap-3'>
                                     <RadioGroupItem value={s} />
@@ -66,34 +66,37 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         </RadioGroup>
 
                         <p>Payers</p>
-                        {group.members.map(m => {
-                            const index = payers.findIndex(p => p.groupMemberId === m.id);
-                            const isChecked = index !== -1;
-                            return (
-                                <label key={m.id} className='flex items-center gap-3'>
-                                    <Checkbox
-                                        checked={isChecked}
-                                        onCheckedChange={checked => checked
-                                            ? setValue("payers", [...payers, { groupMemberId: m.id, splitMethod: payerSplitType, splitValue: null }])
-                                            : setValue("payers", payers.filter(p => p.groupMemberId !== m.id))
+                        <div className='flex flex-col gap-1'>
+                            {group.members.map(m => {
+                                const index = payers.findIndex(p => p.groupMemberId === m.id);
+                                const isChecked = index !== -1;
+                                return (
+                                    <label key={m.id} className='flex items-center gap-3'>
+                                        <Checkbox
+                                            checked={isChecked}
+                                            onCheckedChange={checked => checked
+                                                ? setValue("payers", [...payers, { groupMemberId: m.id, splitMethod: payerSplitType, splitValue: null }])
+                                                : setValue("payers", payers.filter(p => p.groupMemberId !== m.id))
+                                            }
+                                        />
+                                        {m.name}
+                                        {payerSplitType !== "EVEN" && isChecked &&
+                                            <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
                                         }
-                                    />
-                                    {m.name}
-                                    {payerSplitType !== "EVEN" && isChecked &&
-                                        <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
-                                    }
-                                    {errors.payers?.[index]?.splitValue && <p>{errors.payers[index].splitValue.message}</p>}
-                                </label>
-                            );
-                        })}
-                        {errors.payers?.root && <p>{errors.payers.root.message}</p>}
-                        {errors.payers && <p>{errors.payers.message}</p>}
+                                        {errors.payers?.[index]?.splitValue && <p>{errors.payers[index].splitValue.message}</p>}
+                                    </label>
+                                );
+                            })}
+                            {errors.payers?.root && <p>{errors.payers.root.message}</p>}
+                            {errors.payers && <p>{errors.payers.message}</p>}
+
+                        </div>
 
                         <p>Owing Split</p>
                         <RadioGroup value={owerSplitType} onValueChange={(s: $Enums.SplitMethod) => {
                             setOwerSplitType(s);
                             setValue("owers", owers.map(o => ({ ...o, splitMethod: s, splitValue: null })));
-                        }} className='w-fit flex flex-col'>
+                        }} className='w-fit flex flex-col gap-1'>
                             {Object.values($Enums.SplitMethod).map(s =>
                                 <label key={s} className='flex items-center gap-3'>
                                     <RadioGroupItem value={s} />
@@ -102,32 +105,34 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         </RadioGroup>
 
                         <p>Owers</p>
-                        {group.members.map(m => {
-                            const index = owers.findIndex(o => o.groupMemberId === m.id);
-                            const isChecked = index !== -1;
-                            return (
-                                <label key={m.id} className='flex items-center gap-3'>
-                                    <Checkbox
-                                        checked={isChecked}
-                                        onCheckedChange={checked => checked
-                                            ? setValue("owers", [...owers, { groupMemberId: m.id, splitMethod: owerSplitType, splitValue: null }])
-                                            : setValue("owers", owers.filter(o => o.groupMemberId !== m.id))
+                        <div className='flex flex-col gap-1'>
+                            {group.members.map(m => {
+                                const index = owers.findIndex(o => o.groupMemberId === m.id);
+                                const isChecked = index !== -1;
+                                return (
+                                    <label key={m.id} className='flex items-center gap-3'>
+                                        <Checkbox
+                                            checked={isChecked}
+                                            onCheckedChange={checked => checked
+                                                ? setValue("owers", [...owers, { groupMemberId: m.id, splitMethod: owerSplitType, splitValue: null }])
+                                                : setValue("owers", owers.filter(o => o.groupMemberId !== m.id))
+                                            }
+                                        />
+                                        {m.name}
+                                        {owerSplitType !== "EVEN" && isChecked &&
+                                            <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
                                         }
-                                    />
-                                    {m.name}
-                                    {owerSplitType !== "EVEN" && isChecked &&
-                                        <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
-                                    }
-                                    {errors.owers?.[index]?.splitValue && <p>{errors.owers[index].splitValue.message}</p>}
-                                </label>
-                            );
-                        })}
-                        {errors.owers?.root && <p>{errors.owers.root.message}</p>}
-                        {errors.owers && <p>{errors.owers.message}</p>}
+                                        {errors.owers?.[index]?.splitValue && <p>{errors.owers[index].splitValue.message}</p>}
+                                    </label>
+                                );
+                            })}
+                            {errors.owers?.root && <p>{errors.owers.root.message}</p>}
+                            {errors.owers && <p>{errors.owers.message}</p>}
+                        </div>
 
                         <p>Tax</p>
                         {errors.taxType && <p>{errors.taxType.message}</p>}
-                        <RadioGroup defaultValue={initialData?.taxType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("taxType", t === "None" ? null : t); setValue("taxAmount", null); }}>
+                        <RadioGroup defaultValue={initialData?.taxType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("taxType", t === "None" ? null : t); setValue("taxAmount", null); }} className='gap-1'>
                             {[...Object.values($Enums.TaxTipType), "None"].map(t =>
                                 <label key={t} className='flex items-center gap-3'>
                                     <RadioGroupItem value={t} />
@@ -143,7 +148,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
 
                         <p>Tip</p>
                         {errors.tipType && <p>{errors.tipType.message}</p>}
-                        <RadioGroup defaultValue={initialData?.tipType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("tipType", t === "None" ? null : t); setValue("tipAmount", null); }}>
+                        <RadioGroup defaultValue={initialData?.tipType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("tipType", t === "None" ? null : t); setValue("tipAmount", null); }} className='gap-1'>
                             {[...Object.values($Enums.TaxTipType), "None"].map(t =>
                                 <label key={t} className='flex items-center gap-3'>
                                     <RadioGroupItem value={t} />
