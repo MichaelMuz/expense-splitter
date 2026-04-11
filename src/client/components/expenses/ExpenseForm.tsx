@@ -57,9 +57,9 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         <RadioGroup value={payerSplitType} onValueChange={(s: $Enums.SplitMethod) => {
                             setPayerSplitType(s);
                             setValue("payers", payers.map(p => ({ ...p, splitMethod: s, splitValue: null })));
-                        }}>
+                        }} className='w-fit flex flex-col'>
                             {Object.values($Enums.SplitMethod).map(s =>
-                                <label key={s}>
+                                <label key={s} className='flex items-center gap-3'>
                                     <RadioGroupItem value={s} />
                                     {s}
                                 </label>)}
@@ -70,7 +70,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                             const index = payers.findIndex(p => p.groupMemberId === m.id);
                             const isChecked = index !== -1;
                             return (
-                                <label key={m.id}>
+                                <label key={m.id} className='flex items-center gap-3'>
                                     <Checkbox
                                         checked={isChecked}
                                         onCheckedChange={checked => checked
@@ -93,9 +93,9 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         <RadioGroup value={owerSplitType} onValueChange={(s: $Enums.SplitMethod) => {
                             setOwerSplitType(s);
                             setValue("owers", owers.map(o => ({ ...o, splitMethod: s, splitValue: null })));
-                        }}>
+                        }} className='w-fit flex flex-col'>
                             {Object.values($Enums.SplitMethod).map(s =>
-                                <label key={s}>
+                                <label key={s} className='flex items-center gap-3'>
                                     <RadioGroupItem value={s} />
                                     {s}
                                 </label>)}
@@ -106,7 +106,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                             const index = owers.findIndex(o => o.groupMemberId === m.id);
                             const isChecked = index !== -1;
                             return (
-                                <label key={m.id}>
+                                <label key={m.id} className='flex items-center gap-3'>
                                     <Checkbox
                                         checked={isChecked}
                                         onCheckedChange={checked => checked
@@ -129,7 +129,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         {errors.taxType && <p>{errors.taxType.message}</p>}
                         <RadioGroup value={taxType} onValueChange={(t: $Enums.TaxTipType | "NONE") => { setValue("taxType", t === "NONE" ? null : t); setValue("taxAmount", null); }}>
                             {[...Object.values($Enums.TaxTipType), null].map(t =>
-                                <label key={t}>
+                                <label key={t} className='flex items-center gap-3'>
                                     <RadioGroupItem value={t ?? "NONE"} />
                                     {t || "None"}
                                 </label>)}
@@ -145,7 +145,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         {errors.tipType && <p>{errors.tipType.message}</p>}
                         <RadioGroup value={tipType} onValueChange={(t: $Enums.TaxTipType | "NONE") => { setValue("tipType", t === "NONE" ? null : t); setValue("tipAmount", null); }}>
                             {[...Object.values($Enums.TaxTipType), null].map(t =>
-                                <label key={t}>
+                                <label key={t} className='flex items-center gap-3'>
                                     <RadioGroupItem value={t ?? "NONE"} />
                                     {t || "None"}
                                 </label>)}
@@ -162,7 +162,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                     <Button type='submit' disabled={isPending} className='w-full'>
                         {isPending ? 'Submitting...' : 'Submit'}
                     </Button>
-                    <Button asChild>
+                    <Button variant="secondary" disabled={isPending} className="w-full" asChild>
                         <Link to={`/groups/${group.id}`}>Cancel</Link>
                     </Button>
                 </CardFooter>
