@@ -1,0 +1,7 @@
+*
+!src/server
+!src/shared
+!package.json
+!bun.lock
+!tsconfig.json
+!prisma

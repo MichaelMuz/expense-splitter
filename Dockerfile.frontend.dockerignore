@@ -1,0 +1,10 @@
+*
+!src/client
+!src/shared
+!index.html
+!package.json
+!bun.lock
+!vite.config.ts
+!tsconfig.json
+!postcss.config.js
+!public
