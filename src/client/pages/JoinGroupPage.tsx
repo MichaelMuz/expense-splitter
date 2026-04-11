@@ -11,6 +11,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../compone
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
+import { ErrorMessage } from '../components/ui/form-error';
 
 function JoinGroupPageCore({ inviteCode, unclaimedMembers }: { inviteCode: string; unclaimedMembers: GroupMember[] }) {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ function JoinGroupPageCore({ inviteCode, unclaimedMembers }: { inviteCode: strin
         <Card className="w-full max-w-sm mx-auto">
           <CardHeader>
             <CardTitle>Join a group</CardTitle>
-            {joinGroup.isError && <p>{joinGroup.error.message}</p>}
+            <ErrorMessage error={joinGroup.error} />
           </CardHeader>
           <CardContent>
             <div className='flex flex-col gap-3'>
@@ -58,7 +59,7 @@ function JoinGroupPageCore({ inviteCode, unclaimedMembers }: { inviteCode: strin
               {type === "new" &&
                 <label>Member Name
                   <Input {...register("memberName")} />
-                  {"memberName" in errors && errors.memberName?.message}
+                  {"memberName" in errors && <ErrorMessage error={errors.memberName} />}
                 </label>}
               {type === "claim" &&
                 <select {...register("memberId")}>

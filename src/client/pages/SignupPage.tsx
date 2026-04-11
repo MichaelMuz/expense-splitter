@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { ErrorMessage } from '../components/ui/form-error';
 
 const signupFormSchema = signupSchema.extend({
   confirmPassword: z.string(),
@@ -44,24 +45,24 @@ export default function SignupPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-6">
-              {signupMutation.isError && <p>{signupMutation.error.message}</p>}
+              <ErrorMessage error={signupMutation.error} />
               <div className="grid gap-2">
                 <label>Email
                   <Input type="email" {...register("email")} placeholder="user@example.com" />
-                  {errors.email && <p>{errors.email.message}</p>}
+                  <ErrorMessage error={errors.email} />
                 </label>
               </div>
               <div className="grid gap-2">
                 <label>Password
                   <Input type="password" {...register("password")} />
-                  {errors.password && <p>{errors.password.message}</p>}
+                  <ErrorMessage error={errors.password} />
                 </label>
               </div>
 
               <div className="grid gap-2">
                 <label>Confirm password
                   <Input type="password" {...register("confirmPassword")} />
-                  {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+                  <ErrorMessage error={errors.confirmPassword} />
                 </label>
               </div>
             </div>

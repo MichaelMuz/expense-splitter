@@ -11,6 +11,7 @@ import type { Group } from '@/shared/schemas/group';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { ErrorMessage } from '../components/ui/form-error';
 
 
 function SettlementPageCore({ group }: { group: Group }) {
@@ -43,7 +44,7 @@ function SettlementPageCore({ group }: { group: Group }) {
 
           <CardHeader>
             <CardTitle>Record Settlement in {group.name}</CardTitle>
-            {createSettlement.isError && <p>{createSettlement.error.message}</p>}
+            <ErrorMessage error={createSettlement.error} />
           </CardHeader>
           <CardContent className='flex flex-col gap-3'>
 
@@ -60,12 +61,12 @@ function SettlementPageCore({ group }: { group: Group }) {
                   </SelectContent>
                 </Select>
               )} />
-              {errors.fromGroupMemberId?.message}
+              <ErrorMessage error={errors.fromGroupMemberId} />
             </label>
 
             <label>Amount
               <MoneyInput name="amount" control={control} />
-              {errors.amount && <p>{errors.amount.message}</p>}
+              <ErrorMessage error={errors.amount} />
             </label>
 
             <label>Receiver
@@ -81,7 +82,7 @@ function SettlementPageCore({ group }: { group: Group }) {
                   </SelectContent>
                 </Select>
               )} />
-              {errors.toGroupMemberId?.message}
+              <ErrorMessage error={errors.toGroupMemberId} />
             </label>
 
           </CardContent>

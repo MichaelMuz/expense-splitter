@@ -11,6 +11,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card
 import { Input } from '../ui/input';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Checkbox } from '../ui/checkbox';
+import { ErrorMessage } from '../ui/form-error';
 
 export default function ExpenseForm({ initialData, group, isPending, onSubmit, errorMessage }: { initialData?: Expense; group: Group; isPending: boolean; onSubmit: (data: CreateExpenseInput) => void; errorMessage?: string }) {
 
@@ -34,24 +35,24 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
             <Card className='w-full max-w-sm mx-auto'>
                 <CardHeader>
                     <CardTitle>{initialData ? 'Edit' : 'Add'} Expense to {group.name}</CardTitle>
-                    {errorMessage && <p>{errorMessage}</p>}
+                    <ErrorMessage error={{ message: errorMessage }} />
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col gap-3">
                         <label>Expense Name
                             <Input {...register("name")} />
                         </label>
-                        {errors.name && <p>{errors.name.message}</p>}
+                        <ErrorMessage error={errors.name} />
 
                         <label>Expense Description
                             <Input {...register("description")} />
                         </label>
-                        {errors.description && <p>{errors.description.message}</p>}
+                        <ErrorMessage error={errors.description} />
 
                         <label>Expense Amount
                             <MoneyInput name={"baseAmount"} control={control} />
                         </label>
-                        {errors.baseAmount && <p>{errors.baseAmount.message}</p>}
+                        <ErrorMessage error={errors.baseAmount} />
 
                         <p>Payment Split</p>
                         <RadioGroup value={payerSplitType} onValueChange={(s: $Enums.SplitMethod) => {
@@ -83,12 +84,12 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                                         {payerSplitType !== "EVEN" && isChecked &&
                                             <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
                                         }
-                                        {errors.payers?.[index]?.splitValue && <p>{errors.payers[index].splitValue.message}</p>}
+                                        <ErrorMessage error={errors.payers?.[index]?.splitValue} />
                                     </label>
                                 );
                             })}
-                            {errors.payers?.root && <p>{errors.payers.root.message}</p>}
-                            {errors.payers && <p>{errors.payers.message}</p>}
+                            <ErrorMessage error={errors.payers?.root} />
+                            <ErrorMessage error={errors.payers} />
 
                         </div>
 
@@ -122,16 +123,16 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                                         {owerSplitType !== "EVEN" && isChecked &&
                                             <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
                                         }
-                                        {errors.owers?.[index]?.splitValue && <p>{errors.owers[index].splitValue.message}</p>}
+                                        <ErrorMessage error={errors.owers?.[index]?.splitValue} />
                                     </label>
                                 );
                             })}
-                            {errors.owers?.root && <p>{errors.owers.root.message}</p>}
-                            {errors.owers && <p>{errors.owers.message}</p>}
+                            <ErrorMessage error={errors.owers?.root} />
+                            <ErrorMessage error={errors.owers} />
                         </div>
 
                         <p>Tax</p>
-                        {errors.taxType && <p>{errors.taxType.message}</p>}
+                        <ErrorMessage error={errors.taxType} />
                         <RadioGroup defaultValue={initialData?.taxType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("taxType", t === "None" ? null : t); setValue("taxAmount", null); }} className='gap-1'>
                             {[...Object.values($Enums.TaxTipType), "None"].map(t =>
                                 <label key={t} className='flex items-center gap-3'>
@@ -142,12 +143,12 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         {taxType &&
                             <label>Tax Amount
                                 <PercentOrMoneyInput name="taxAmount" control={control} />
-                                {errors.taxAmount && <p>{errors.taxAmount.message}</p>}
+                                <ErrorMessage error={errors.taxAmount} />
                             </label>}
 
 
                         <p>Tip</p>
-                        {errors.tipType && <p>{errors.tipType.message}</p>}
+                        <ErrorMessage error={errors.tipType} />
                         <RadioGroup defaultValue={initialData?.tipType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("tipType", t === "None" ? null : t); setValue("tipAmount", null); }} className='gap-1'>
                             {[...Object.values($Enums.TaxTipType), "None"].map(t =>
                                 <label key={t} className='flex items-center gap-3'>
@@ -158,7 +159,7 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                         {tipType &&
                             <label>Tip Amount
                                 <PercentOrMoneyInput name="tipAmount" control={control} />
-                                {errors.tipAmount && <p>{errors.tipAmount.message}</p>}
+                                <ErrorMessage error={errors.tipAmount} />
                             </label>}
 
                     </div>

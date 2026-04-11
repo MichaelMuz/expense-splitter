@@ -9,6 +9,7 @@ import { createGroupSchema, type CreateGroupInput } from '@/shared/schemas/group
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { ErrorMessage } from '../components/ui/form-error';
 
 
 export default function CreateGroupPage() {
@@ -30,13 +31,13 @@ export default function CreateGroupPage() {
         <Card className="w-full max-w-sm mx-auto">
           <CardHeader>
             <CardTitle>Create new group</CardTitle>
-            {createGroup.isError && <p>{createGroup.error.message}</p>}
+            <ErrorMessage error={createGroup.error} />
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-6">
               <label>Group name
                 <Input {...register("name")} />
-                {errors.name && <p>{errors.name.message}</p>}
+                <ErrorMessage error={errors.name} />
               </label>
             </div>
           </CardContent>
