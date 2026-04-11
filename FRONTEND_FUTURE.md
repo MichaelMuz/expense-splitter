@@ -10,7 +10,7 @@ Features that would meaningfully improve UX.
 
 - **Empty states** -- friendly messages when there are no groups/expenses/settlements yet, with a call-to-action button (e.g. "No expenses yet. Add one!")
 - **Confirmation dialogs** -- replace `window.confirm` for delete actions with shadcn `AlertDialog` (`npx shadcn@latest add alert-dialog`)
-- **Toast notifications** -- Sonner is installed but not wired up to mutations. Show success/error toasts on create/edit/delete actions
+- **Toast notifications** -- Sonner is installed and used for copy-invite-link, but not wired up to mutations. Show success/error toasts on create/edit/delete actions
 - **Mobile responsiveness** -- test and fix layouts on small screens using Tailwind's `sm:`/`md:`/`lg:` prefixes
 - **Landing page** -- the homepage is bare minimum centered text + buttons. Could be a proper hero/marketing page
 
@@ -27,5 +27,4 @@ Nice polish that isn't urgent.
 
 Bigger refactors that add correctness/accessibility but are a lot of work.
 
-- **shadcn Form integration** -- use the native react-hook-form + shadcn integration (`Field`, `FieldLabel`, `FieldError`, `Controller`) for consistent error display, red border outlines, and `aria-invalid` accessibility attributes. See `form-error.tsx` comment. Would require rewriting every form field
-- **Retrofit older forms** -- Login, Signup, CreateGroup were styled early and don't use the preferred `Field`/`FieldLabel`/`FieldError` pattern established later
+- **shadcn Form integration** -- use the native react-hook-form + shadcn integration (`Field`, `FieldLabel`, `FieldError`, `Controller`) for consistent error display, red border outlines, and `aria-invalid` accessibility attributes. See `form-error.tsx` comment. Would require rewriting every form field across all pages
