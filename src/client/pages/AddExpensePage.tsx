@@ -15,25 +15,21 @@ function AddExpenseCore({ groupId, initialData, mutation }: { groupId: string; i
     mutation.mutate(expense, { onSuccess: () => navigate(`/groups/${groupId}`) })
   }
 
-  if (isLoading) return <Loading name="group" />;
+  if (isLoading) return <Loading name="group" fullPage />;
   else if (!group) return <Navigate to="/groups" replace />;
 
   return (
     <Layout>
-      {mutation.isError && <p>{mutation.error.message}</p>}
-      <button onClick={() => navigate(`/groups/${groupId}`)}>Back</button>
-      <h1>{initialData ? 'Edit' : 'Add'} Expense to {group.name}</h1>
-      <ExpenseForm initialData={initialData} members={group.members} isPending={mutation.isPending} onSubmit={createExpense} />
-    </Layout>
+      <ExpenseForm initialData={initialData} group={group} isPending={mutation.isPending} onSubmit={createExpense} errorMessage={mutation.isError ? mutation.error.message : undefined} />
+    </Layout >
   );
-
 }
 
 function EditExpense({ groupId, expenseId }: { groupId: string, expenseId: string }) {
   const expense = useExpense(groupId, expenseId)
   const updateExpense = useUpdateExpense(groupId, expenseId)
 
-  if (expense.isLoading) return <Loading name="expense" />
+  if (expense.isLoading) return <Loading name="expense" fullPage />
   else if (expense.isError || !expense.data) return <p>Error loading expense {expense.error?.message || ""}</p>
 
   return <AddExpenseCore groupId={groupId} initialData={expense.data} mutation={updateExpense} />

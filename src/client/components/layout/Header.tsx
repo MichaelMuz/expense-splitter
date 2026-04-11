@@ -1,26 +1,45 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { Button } from '../ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { LogOutIcon, UserIcon } from 'lucide-react';
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
 
   return (
-    <header>
-      <nav>
-        <Link to="/"><strong>Expense Splitter</strong></Link>
+    <nav className="flex justify-between items-center px-6 py-3 border-b">
+      <Link to="/"><strong>Expense Splitter</strong></Link>
+      <div className="flex gap-4">
         {isAuthenticated ? (
           <>
-            {' | '}<Link to="/groups">Groups</Link>
-            {' | '}<span>{user?.email}</span>
-            {' | '}<button onClick={logout}>Logout</button>
+            <Button asChild variant="ghost">
+              <Link to="/groups">Groups</Link>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost"><UserIcon /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
+                <DropdownMenuItem onClick={logout} className="text-destructive">
+                  <LogOutIcon />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </>
         ) : (
           <>
-            {' | '}<Link to="/login">Login</Link>
-            {' | '}<Link to="/signup">Sign Up</Link>
+            <Button asChild variant="ghost">
+              <Link to="/login">Login</Link>
+            </Button>
+            <Button asChild variant="ghost">
+              <Link to="/signup">Sign Up</Link>
+            </Button>
           </>
         )}
-      </nav>
-    </header>
+      </div>
+    </nav>
   );
 }

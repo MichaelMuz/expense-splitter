@@ -45,6 +45,7 @@ Pain points with current stack and possible alternatives to explore.
 ## Polish TODOs
 
 - **Invite link redirect after login**: If a logged-out user clicks an invite link (`/join/:inviteCode`), they get redirected to login and lose the invite URL. Fix: pass the invite URL as a query param to login (`/login?redirect=/join/abc-123`), then navigate to it after successful login.
+- **Button+Link accessibility**: Some places use `<Button onClick={() => navigate(...)}>` instead of `<Button asChild><Link>`. The latter preserves link semantics (right-click, middle-click, screen reader announces as link). Audit and fix.
 
 ## Non-Committal Notes
 

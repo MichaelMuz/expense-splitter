@@ -1,6 +1,7 @@
 import { toCents, toDollars } from "@/shared/utils/currency";
 import { useState } from "react";
 import { useController, type Control, type FieldValues, type Path } from "react-hook-form";
+import { Input } from './input';
 
 /*
  * canParse: is the raw input complete and valid enough to parse? Note that the zod form we are filling out must fail the input when this returns false.
@@ -23,7 +24,7 @@ function FormattedInput<T extends FieldValues, F>({ name, control, formatter, ..
     // field can be null/undefined if it is empty. Otherwise it contains valid data from db so we can format
     const [raw, setRaw] = useState<string>(() => field.value != null ? formatter.format(field.value) : "");
 
-    return <input
+    return <Input
         {...rest}
         {...field}
         value={raw}

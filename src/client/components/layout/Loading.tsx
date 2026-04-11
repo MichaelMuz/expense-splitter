@@ -1,7 +1,7 @@
 import { Layout } from './Layout';
 
-export function Loading({ name }: { name?: string }) {
+export function Loading({ name, fullPage }: { name?: string; fullPage?: boolean }) {
     const fullMessage = name ? `Loading ${name}...` : 'Loading...';
-    return <Layout> <p> {fullMessage} </p> </Layout>
-
+    const content = <p className="text-center text-muted-foreground">{fullMessage}</p>;
+    return fullPage ? <Layout>{content}</Layout> : content;
 }

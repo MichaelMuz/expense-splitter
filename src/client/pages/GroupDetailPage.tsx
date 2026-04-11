@@ -1,79 +1,59 @@
-import { useState } from 'react';
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useParams, Navigate, Link } from 'react-router-dom';
 import { ExpenseList } from '../components/expenses/ExpenseList';
 import { useGroup } from '../hooks/useGroups';
 import { Layout } from '../components/layout/Layout';
 import { Loading } from '../components/layout/Loading';
 import { SettlementList } from '../components/settlements/SettlementList';
 import { BalancesList } from '../components/balances/BalancesList';
-
-type Tab = 'expenses' | 'balances' | 'members' | 'settlements';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Button } from '../components/ui/button';
+import { MembersList } from '../components/members/MembersList';
 
 function GroupDetailCore({ groupId }: { groupId: string }) {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>('expenses');
   const { data: group, isLoading, error } = useGroup(groupId);
-  const [copied, setCopied] = useState(false);
 
 
-  if (isLoading) return <Loading name='group' />
+  if (isLoading) return <Loading name='group' fullPage />
   if (error || !group) return <Layout><p>Failed to load group.</p></Layout>;
 
-  const inviteUrl = `${window.location.origin}/groups/join/${group.inviteCode}`
-  const copyOnClick = () => {
-    navigator.clipboard.writeText(inviteUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1000)
-  }
 
   return (
     <Layout>
-      <h1>{group.name}</h1>
+      <h1 className='font-bold text-lg text-center'>{group.name}</h1>
 
-      <nav>
-        <button onClick={() => setActiveTab('expenses')} disabled={activeTab === 'expenses'}>Expenses</button>
-        {' '}
-        <button onClick={() => setActiveTab('settlements')} disabled={activeTab === 'settlements'}>Settlements</button>
-        {' '}
-        <button onClick={() => setActiveTab('balances')} disabled={activeTab === 'balances'}>Balances</button>
-        {' '}
-        <button onClick={() => setActiveTab('members')} disabled={activeTab === 'members'}>Members</button>
-      </nav>
+      <Tabs defaultValue="expenses" >
+        <div className='flex justify-center'>
+          <TabsList>
+            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+            <TabsTrigger value="settlements">Settlements</TabsTrigger>
+            <TabsTrigger value="balances">Balances</TabsTrigger>
+            <TabsTrigger value="members">Members</TabsTrigger>
+          </TabsList>
+        </div>
 
-      {activeTab === 'expenses' && (
-        <div>
-          <button onClick={() => navigate(`/groups/${groupId}/expenses/new`)}>Add Expense</button>
+        <TabsContent value="expenses">
+          <Button asChild>
+            <Link to={`/groups/${groupId}/expenses/new`}>Add expense</Link>
+          </Button>
           <ExpenseList groupId={groupId} />
-        </div>
-      )}
+        </TabsContent>
 
-      {activeTab === 'settlements' && (
-        <div>
-          <button onClick={() => navigate(`/groups/${groupId}/settlements/new`)}>Add Settlement</button>
+        <TabsContent value="settlements">
+          <Button asChild>
+            <Link to={`/groups/${groupId}/settlements/new`}>Add settlement</Link>
+          </Button>
           <SettlementList groupId={groupId} />
-        </div>
-      )}
+        </TabsContent>
 
-      {activeTab === 'balances' &&
-        <BalancesList groupId={groupId} members={group.members} />}
+        <TabsContent value="balances">
+          <BalancesList groupId={groupId} members={group.members} />
+        </TabsContent>
 
-      {activeTab === 'members' && (
-        <div>
-          <h2>Members</h2>
-          Invite code: {inviteUrl}
-          <button onClick={copyOnClick}>{copied ? "Copied" : "Copy"}</button>
-          <ul>
-            {group.members.map((m) => (
-              <li key={m.id}>
-                {m.name}
-                {m.role === 'owner' ? ' (owner)' : ''}
-                {!m.userId ? ' (virtual)' : ''}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </Layout>
+        <TabsContent value="members">
+          <MembersList groupMembers={group.members} inviteCode={group.inviteCode} />
+        </TabsContent>
+      </Tabs>
+    </Layout >
   );
 
 }
