@@ -72,20 +72,22 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                                 const index = payers.findIndex(p => p.groupMemberId === m.id);
                                 const isChecked = index !== -1;
                                 return (
-                                    <label key={m.id} className='flex items-center gap-3'>
-                                        <Checkbox
-                                            checked={isChecked}
-                                            onCheckedChange={checked => checked
-                                                ? setValue("payers", [...payers, { groupMemberId: m.id, splitMethod: payerSplitType, splitValue: null }])
-                                                : setValue("payers", payers.filter(p => p.groupMemberId !== m.id))
+                                    <div key={m.id} className='flex flex-col'>
+                                        <label className='flex items-center gap-3'>
+                                            <Checkbox
+                                                checked={isChecked}
+                                                onCheckedChange={checked => checked
+                                                    ? setValue("payers", [...payers, { groupMemberId: m.id, splitMethod: payerSplitType, splitValue: null }])
+                                                    : setValue("payers", payers.filter(p => p.groupMemberId !== m.id))
+                                                }
+                                            />
+                                            {m.name}
+                                            {payerSplitType !== "EVEN" && isChecked &&
+                                                <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
                                             }
-                                        />
-                                        {m.name}
-                                        {payerSplitType !== "EVEN" && isChecked &&
-                                            <PercentOrMoneyInput name={`payers.${index}.splitValue`} control={control} />
-                                        }
+                                        </label>
                                         <ErrorMessage error={errors.payers?.[index]?.splitValue} />
-                                    </label>
+                                    </div>
                                 );
                             })}
                             <ErrorMessage error={errors.payers?.root} />
@@ -111,20 +113,22 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
                                 const index = owers.findIndex(o => o.groupMemberId === m.id);
                                 const isChecked = index !== -1;
                                 return (
-                                    <label key={m.id} className='flex items-center gap-3'>
-                                        <Checkbox
-                                            checked={isChecked}
-                                            onCheckedChange={checked => checked
-                                                ? setValue("owers", [...owers, { groupMemberId: m.id, splitMethod: owerSplitType, splitValue: null }])
-                                                : setValue("owers", owers.filter(o => o.groupMemberId !== m.id))
+                                    <div key={m.id} className='flex flex-col'>
+                                        <label className='flex items-center gap-3'>
+                                            <Checkbox
+                                                checked={isChecked}
+                                                onCheckedChange={checked => checked
+                                                    ? setValue("owers", [...owers, { groupMemberId: m.id, splitMethod: owerSplitType, splitValue: null }])
+                                                    : setValue("owers", owers.filter(o => o.groupMemberId !== m.id))
+                                                }
+                                            />
+                                            {m.name}
+                                            {owerSplitType !== "EVEN" && isChecked &&
+                                                <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
                                             }
-                                        />
-                                        {m.name}
-                                        {owerSplitType !== "EVEN" && isChecked &&
-                                            <PercentOrMoneyInput name={`owers.${index}.splitValue`} control={control} />
-                                        }
+                                        </label>
                                         <ErrorMessage error={errors.owers?.[index]?.splitValue} />
-                                    </label>
+                                    </div>
                                 );
                             })}
                             <ErrorMessage error={errors.owers?.root} />
