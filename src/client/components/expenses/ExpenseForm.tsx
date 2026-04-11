@@ -127,11 +127,11 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
 
                         <p>Tax</p>
                         {errors.taxType && <p>{errors.taxType.message}</p>}
-                        <RadioGroup value={taxType} onValueChange={(t: $Enums.TaxTipType | "NONE") => { setValue("taxType", t === "NONE" ? null : t); setValue("taxAmount", null); }}>
-                            {[...Object.values($Enums.TaxTipType), null].map(t =>
+                        <RadioGroup defaultValue={initialData?.taxType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("taxType", t === "None" ? null : t); setValue("taxAmount", null); }}>
+                            {[...Object.values($Enums.TaxTipType), "None"].map(t =>
                                 <label key={t} className='flex items-center gap-3'>
-                                    <RadioGroupItem value={t ?? "NONE"} />
-                                    {t || "None"}
+                                    <RadioGroupItem value={t} />
+                                    {t}
                                 </label>)}
                         </RadioGroup>
                         {taxType &&
@@ -143,11 +143,11 @@ export default function ExpenseForm({ initialData, group, isPending, onSubmit, e
 
                         <p>Tip</p>
                         {errors.tipType && <p>{errors.tipType.message}</p>}
-                        <RadioGroup value={tipType} onValueChange={(t: $Enums.TaxTipType | "NONE") => { setValue("tipType", t === "NONE" ? null : t); setValue("tipAmount", null); }}>
-                            {[...Object.values($Enums.TaxTipType), null].map(t =>
+                        <RadioGroup defaultValue={initialData?.tipType ?? "None"} onValueChange={(t: $Enums.TaxTipType | "None") => { setValue("tipType", t === "None" ? null : t); setValue("tipAmount", null); }}>
+                            {[...Object.values($Enums.TaxTipType), "None"].map(t =>
                                 <label key={t} className='flex items-center gap-3'>
-                                    <RadioGroupItem value={t ?? "NONE"} />
-                                    {t || "None"}
+                                    <RadioGroupItem value={t} />
+                                    {t}
                                 </label>)}
                         </RadioGroup>
                         {tipType &&
