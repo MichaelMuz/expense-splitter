@@ -1,0 +1,29 @@
+name: Publish Images
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: gha-homelab
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        run: podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend
+        run: |
+          podman build -f Dockerfile.backend -t ghcr.io/michaelmuz/expense-splitter-backend:${{ github.sha }} -t ghcr.io/michaelmuz/expense-splitter-backend:latest .
+          podman push ghcr.io/michaelmuz/expense-splitter-backend:${{ github.sha }}
+          podman push ghcr.io/michaelmuz/expense-splitter-backend:latest
+
+      - name: Build and push frontend
+        run: |
+          podman build -f Dockerfile.frontend -t ghcr.io/michaelmuz/expense-splitter-frontend:${{ github.sha }} -t ghcr.io/michaelmuz/expense-splitter-frontend:latest .
+          podman push ghcr.io/michaelmuz/expense-splitter-frontend:${{ github.sha }}
+          podman push ghcr.io/michaelmuz/expense-splitter-frontend:latest
