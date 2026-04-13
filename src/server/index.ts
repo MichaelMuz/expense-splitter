@@ -51,7 +51,8 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, (error?: Error) => {
+  if (error) throw error;
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`API endpoints available at http://localhost:${PORT}/api`);
 });
