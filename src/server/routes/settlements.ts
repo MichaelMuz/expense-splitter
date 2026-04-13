@@ -29,59 +29,55 @@ router.post(
   validateParams(groupIdParamSchema),
   validateBody(createSettlementSchema),
   checkGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
-      const groupMembership = req.groupMembership!;
-      const createSettlement = req.body as CreateSettlementInput;
-      const { fromGroupMemberId, toGroupMemberId, amount } = createSettlement;
+  async (req, res) => {
+    const groupId = req.params.groupId!; // Validated by middleware
+    const groupMembership = req.groupMembership!;
+    const createSettlement = req.body as CreateSettlementInput;
+    const { fromGroupMemberId, toGroupMemberId, amount } = createSettlement;
 
-      // Verify all group member IDs belong to this group
-      const memberIds = [fromGroupMemberId, toGroupMemberId];
-      const members = await prisma.groupMember.findMany({
-        where: {
-          id: { in: memberIds },
-          groupId,
-        },
-      });
+    // Verify all group member IDs belong to this group
+    const memberIds = [fromGroupMemberId, toGroupMemberId];
+    const members = await prisma.groupMember.findMany({
+      where: {
+        id: { in: memberIds },
+        groupId,
+      },
+    });
 
-      if (members.length !== memberIds.length) {
-        res.status(400).json({ error: 'Invalid group member IDs' });
-        return;
-      }
-
-      // Create settlement
-      const settlement = await prisma.settlement.create({
-        data: {
-          groupId,
-          fromGroupMemberId,
-          toGroupMemberId,
-          amount,
-          recordedBy: groupMembership.id,
-        },
-        include: {
-          fromMember: {
-            select: {
-              id: true,
-              name: true,
-              userId: true,
-            },
-          },
-          toMember: {
-            select: {
-              id: true,
-              name: true,
-              userId: true,
-            },
-          },
-        },
-      });
-
-      const responseData: SettlementResponse = { settlement };
-      res.status(201).json(responseData);
-    } catch (error) {
-      next(error);
+    if (members.length !== memberIds.length) {
+      res.status(400).json({ error: 'Invalid group member IDs' });
+      return;
     }
+
+    // Create settlement
+    const settlement = await prisma.settlement.create({
+      data: {
+        groupId,
+        fromGroupMemberId,
+        toGroupMemberId,
+        amount,
+        recordedBy: groupMembership.id,
+      },
+      include: {
+        fromMember: {
+          select: {
+            id: true,
+            name: true,
+            userId: true,
+          },
+        },
+        toMember: {
+          select: {
+            id: true,
+            name: true,
+            userId: true,
+          },
+        },
+      },
+    });
+
+    const responseData: SettlementResponse = { settlement };
+    res.status(201).json(responseData);
   }
 );
 
@@ -94,37 +90,33 @@ router.get(
   authenticateToken,
   validateParams(groupIdParamSchema),
   checkGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
+  async (req, res) => {
+    const groupId = req.params.groupId!; // Validated by middleware
 
-      // Fetch all settlements
-      const settlements = await prisma.settlement.findMany({
-        where: { groupId },
-        include: {
-          fromMember: {
-            select: {
-              id: true,
-              name: true,
-              userId: true,
-            },
-          },
-          toMember: {
-            select: {
-              id: true,
-              name: true,
-              userId: true,
-            },
+    // Fetch all settlements
+    const settlements = await prisma.settlement.findMany({
+      where: { groupId },
+      include: {
+        fromMember: {
+          select: {
+            id: true,
+            name: true,
+            userId: true,
           },
         },
-        orderBy: { paidAt: 'desc' },
-      });
+        toMember: {
+          select: {
+            id: true,
+            name: true,
+            userId: true,
+          },
+        },
+      },
+      orderBy: { paidAt: 'desc' },
+    });
 
-      const responseData: SettlementsResponse = { settlements };
-      res.json(responseData);
-    } catch (error) {
-      next(error);
-    }
+    const responseData: SettlementsResponse = { settlements };
+    res.json(responseData);
   }
 );
 
@@ -137,48 +129,44 @@ router.delete(
   authenticateToken,
   validateParams(settlementParamsSchema),
   checkGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
-      const settlementId = req.params.settlementId!;
-      const groupMembership = req.groupMembership!;
+  async (req, res) => {
+    const groupId = req.params.groupId!; // Validated by middleware
+    const settlementId = req.params.settlementId!;
+    const groupMembership = req.groupMembership!;
 
-      // Verify settlement exists and belongs to this group
-      const settlement = await prisma.settlement.findFirst({
-        where: {
-          id: settlementId,
-          groupId,
-        },
-      });
+    // Verify settlement exists and belongs to this group
+    const settlement = await prisma.settlement.findFirst({
+      where: {
+        id: settlementId,
+        groupId,
+      },
+    });
 
-      if (!settlement) {
-        res.status(404).json({ error: 'Settlement not found' });
-        return;
-      }
-      const canDelete =
-        groupMembership.role === 'owner' ||
-        [
-          settlement.fromGroupMemberId,
-          settlement.toGroupMemberId,
-          settlement.recordedBy,
-        ].includes(groupMembership.id);
-      if (!canDelete) {
-        res.status(403).json({
-          error:
-            'You can only delete a settlement if you are the recorder, sender, receiver, or owner of the group',
-        });
-        return;
-      }
-
-      // Delete settlement
-      await prisma.settlement.delete({
-        where: { id: settlementId },
-      });
-
-      res.status(204).send();
-    } catch (error) {
-      next(error);
+    if (!settlement) {
+      res.status(404).json({ error: 'Settlement not found' });
+      return;
     }
+    const canDelete =
+      groupMembership.role === 'owner' ||
+      [
+        settlement.fromGroupMemberId,
+        settlement.toGroupMemberId,
+        settlement.recordedBy,
+      ].includes(groupMembership.id);
+    if (!canDelete) {
+      res.status(403).json({
+        error:
+          'You can only delete a settlement if you are the recorder, sender, receiver, or owner of the group',
+      });
+      return;
+    }
+
+    // Delete settlement
+    await prisma.settlement.delete({
+      where: { id: settlementId },
+    });
+
+    res.status(204).send();
   }
 );
 
