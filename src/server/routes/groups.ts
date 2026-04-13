@@ -50,7 +50,7 @@ const router = Router();
 router.get(
   '/join/:inviteCode',
   validateParams(inviteCodeParamSchema),
-  async (req: Request, res: Response) => {
+  async (req: Request<{ inviteCode: string }>, res: Response) => {
     const { inviteCode } = req.params;
 
     const group = await prisma.group.findFirst({
@@ -78,7 +78,7 @@ router.post(
   '/join/:inviteCode',
   validateParams(inviteCodeParamSchema),
   validateBody(joinInviteSchema),
-  async (req: Request, res: Response) => {
+  async (req: Request<{ inviteCode: string }>, res: Response) => {
     const user = req.user!;
     const { inviteCode } = req.params;
     const joinInput = req.body as JoinInviteInput;
@@ -217,7 +217,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get(
   '/:groupId',
   validateParams(groupIdParamSchema),
-  async (req: Request, res: Response) => {
+  async (req: Request<{ groupId: string }>, res: Response) => {
     const user = req.user!; // checked in auth
 
     const { groupId } = req.params;
@@ -246,7 +246,7 @@ router.get(
 router.delete(
   '/:groupId',
   validateParams(groupIdParamSchema),
-  async (req: Request, res: Response) => {
+  async (req: Request<{ groupId: string }>, res: Response) => {
     const user = req.user!;
     const { groupId } = req.params;
 

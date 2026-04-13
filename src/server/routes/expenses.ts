@@ -122,11 +122,11 @@ function formatExpenseWithCalculations(expense: ExpenseWithRelations) {
  * Middleware to check that the owers and payers specified are part of the group
  */
 async function checkOwersPayersGroupMembership(
-  req: Request,
+  req: Request<{ groupId: string }>,
   res: Response,
   next: NextFunction
 ) {
-  const groupId = req.params.groupId!; // Validated by middleware running before this
+  const groupId = req.params.groupId; // Validated by middleware running before this
   const owers = req.body.owers as CreateExpenseInput['owers'];
   const payers = req.body.payers as CreateExpenseInput['payers'];
 
@@ -164,8 +164,8 @@ router.get(
   '/:groupId/expenses',
   validateParams(groupIdParamSchema),
   checkGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
+  async (req: Request<{ groupId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
 
     // Fetch all expenses for the group
     const expenses = await prisma.expense.findMany({
@@ -194,8 +194,8 @@ router.post(
   validateBody(createExpenseSchema),
   checkGroupMembership,
   checkOwersPayersGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
+  async (req: Request<{ groupId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
     const { payers, owers, ...baseInfo } = req.body as CreateExpenseInput;
 
     // Create expense with payers and owers
@@ -227,9 +227,9 @@ router.get(
   '/:groupId/expenses/:expenseId',
   validateParams(expenseParamsSchema),
   checkGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
-    const expenseId = req.params.expenseId!; // Validated by middleware
+  async (req: Request<{ groupId: string; expenseId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const expenseId = req.params.expenseId;
 
     // Fetch expense
     const expense = await prisma.expense.findFirst({
@@ -265,9 +265,9 @@ router.put(
   validateBody(createExpenseSchema),
   checkGroupMembership,
   checkOwersPayersGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
-    const expenseId = req.params.expenseId!; // Validated by middleware
+  async (req: Request<{ groupId: string; expenseId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const expenseId = req.params.expenseId;
     const { payers, owers, ...baseInfo } = req.body as CreateExpenseInput;
 
     // Verify expense exists
@@ -312,9 +312,9 @@ router.delete(
   '/:groupId/expenses/:expenseId',
   validateParams(expenseParamsSchema),
   checkGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
-    const expenseId = req.params.expenseId!; // Validated by middleware
+  async (req: Request<{ groupId: string; expenseId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const expenseId = req.params.expenseId;
 
     // Delete expense (cascade will delete payers and owers)
     const result = await prisma.expense.deleteMany({

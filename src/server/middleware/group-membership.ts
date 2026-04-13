@@ -15,11 +15,11 @@ declare global {
  * Middleware to check that the currently authenticated user is part of the group they are accessing
  */
 export async function checkGroupMembership(
-  req: Request,
+  req: Request<{ groupId: string }>,
   res: Response,
   next: NextFunction
 ) {
-  const groupId = req.params.groupId!; // Validated by middleware run before this
+  const groupId = req.params.groupId; // Validated by middleware run before this
   const userId = req.user!.userId;
 
   // Check membership

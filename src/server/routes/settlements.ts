@@ -3,7 +3,7 @@
  * Handles recording and viewing settlements (payments) between group members
  */
 
-import { Router } from 'express';
+import { Router, type Request } from 'express';
 import { prisma } from '../lib/prisma';
 import { authenticateToken } from '../middleware/auth';
 import { validateBody, validateParams } from '../middleware/validate';
@@ -29,8 +29,8 @@ router.post(
   validateParams(groupIdParamSchema),
   validateBody(createSettlementSchema),
   checkGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
+  async (req: Request<{ groupId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
     const groupMembership = req.groupMembership!;
     const createSettlement = req.body as CreateSettlementInput;
     const { fromGroupMemberId, toGroupMemberId, amount } = createSettlement;
@@ -90,8 +90,8 @@ router.get(
   authenticateToken,
   validateParams(groupIdParamSchema),
   checkGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
+  async (req: Request<{ groupId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
 
     // Fetch all settlements
     const settlements = await prisma.settlement.findMany({
@@ -129,9 +129,9 @@ router.delete(
   authenticateToken,
   validateParams(settlementParamsSchema),
   checkGroupMembership,
-  async (req, res) => {
-    const groupId = req.params.groupId!; // Validated by middleware
-    const settlementId = req.params.settlementId!;
+  async (req: Request<{ groupId: string; settlementId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const settlementId = req.params.settlementId;
     const groupMembership = req.groupMembership!;
 
     // Verify settlement exists and belongs to this group

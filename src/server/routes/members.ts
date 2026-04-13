@@ -33,7 +33,7 @@ router.get(
   '/:groupId/members',
   validateParams(groupIdParamSchema),
   checkGroupMembership,
-  async (req: Request, res: Response) => {
+  async (req: Request<{ groupId: string }>, res: Response) => {
     const { groupId } = req.params;
 
     // Get members with additional details
@@ -70,8 +70,8 @@ router.post(
   validateParams(groupIdParamSchema),
   validateBody(createMemberSchema),
   checkGroupMembership,
-  async (req: Request, res: Response) => {
-    const groupId = req.params.groupId!; // Validated by middleware
+  async (req: Request<{ groupId: string }>, res: Response) => {
+    const groupId = req.params.groupId; // Validated by middleware
     const createMemberData = req.body as CreateMemberInput;
     const { name } = createMemberData;
 
@@ -94,8 +94,8 @@ router.use(
   '/:groupId/members/:memberId',
   validateParams(memberIdParamSchema),
   checkGroupMembership,
-  async (req: Request, res: Response, next) => {
-    const memberId = req.params!.memberId!;
+  async (req: Request<{ groupId: string; memberId: string }>, res: Response, next) => {
+    const memberId = req.params.memberId;
     const groupMembership = req.groupMembership!;
 
     // Only owner can remove other members, members can remove themselves
@@ -118,9 +118,9 @@ router.use(
 router.patch(
   '/:groupId/members/:memberId',
   validateBody(updateMemberSchema),
-  async (req: Request, res: Response) => {
-    const groupId = req.params!.groupId!; // Validated by middleware
-    const memberId = req.params!.memberId!;
+  async (req: Request<{ groupId: string; memberId: string }>, res: Response) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const memberId = req.params.memberId;
     const updateMemberData = req.body as UpdateMemberInput;
     const { name } = updateMemberData;
 
@@ -155,9 +155,9 @@ router.patch(
  */
 router.delete(
   '/:groupId/members/:memberId',
-  async (req: Request, res: Response) => {
-    const groupId = req.params!.groupId!; // Validated by middleware
-    const memberId = req.params!.memberId!;
+  async (req: Request<{ groupId: string; memberId: string }>, res: Response) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const memberId = req.params.memberId;
 
     // Check if member exists in group, has any expenses, or is the owner
     const memberToRemove = await prisma.groupMember.findFirst({
