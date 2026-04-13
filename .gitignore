@@ -10,6 +10,9 @@ bun.lockb
 dist/
 build/
 
+# Generated code
+prisma/generated/
+
 # Logs
 *.log
 npm-debug.log*

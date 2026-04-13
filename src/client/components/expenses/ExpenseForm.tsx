@@ -1,4 +1,4 @@
-import { $Enums } from '@prisma/client';
+import { $Enums } from '@prisma/generated';
 import { createExpenseSchema, type CreateExpenseInput, type Expense } from "@/shared/schemas/expense";
 import { useState } from "react";
 import type { Group } from "@/shared/schemas/group";

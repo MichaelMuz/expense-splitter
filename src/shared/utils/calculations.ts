@@ -3,7 +3,7 @@
  * All amounts are in cents (integers) for precision.
  */
 
-import type { TaxTipType } from '@prisma/client';
+import type { TaxTipType } from '@prisma/generated';
 import type { ExpenseData, PayerInput, OwerInput, Expense } from '../schemas/expense';
 import { assertUnreachable, assert } from './type-helpers';
 import type { Settlement } from '../schemas/settlement';

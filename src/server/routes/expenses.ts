@@ -28,7 +28,7 @@ import {
   calculatePayerAmounts,
   calculateOwerAmounts,
 } from '../../shared/utils/calculations';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/generated';
 import { groupIdParamSchema } from '@/shared/schemas/group';
 
 const expenseWithRelations = Prisma.validator<Prisma.ExpenseDefaultArgs>()({

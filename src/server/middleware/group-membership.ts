@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import type { GroupMember } from '@prisma/client';
+import type { GroupMember } from '@prisma/generated';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

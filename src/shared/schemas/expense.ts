@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import { $Enums } from '@prisma/client';
+import { $Enums } from '@prisma/generated';
 import { tuple } from '../utils/type-helpers';
 import { calculateTotalExpenseAmount } from '../utils/calculations';
 import { money } from './fields';
