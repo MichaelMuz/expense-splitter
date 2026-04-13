@@ -9,8 +9,8 @@ import { calculateTotalExpenseAmount } from '../utils/calculations';
 import { money } from './fields';
 
 // TODO Would be really cool to use postgres data validation features for things like this
-export const TaxTipTypeEnum = z.nativeEnum($Enums.TaxTipType);
-export const SplitMethodEnum = z.nativeEnum($Enums.SplitMethod);
+export const TaxTipTypeEnum = z.enum($Enums.TaxTipType);
+export const SplitMethodEnum = z.enum($Enums.SplitMethod);
 
 // Param validation schema
 export const expenseParamsSchema = z.object({
@@ -27,7 +27,7 @@ const expenseParticipantUnrefined = z.object({
 
 const splitValueRequired = tuple(
   (p: z.infer<typeof expenseParticipantUnrefined>) => p.splitMethod === "EVEN" || p.splitValue != null,
-  { message: "Amount is required", path: ["splitValue"] }
+  { error: "Amount is required", path: ["splitValue"] }
 );
 
 export const expenseParticipant = expenseParticipantUnrefined.refine(...splitValueRequired);
@@ -47,7 +47,7 @@ function expenseParticipants(type: 'payers' | 'owers') {
         const methods = participants.map((p) => p.splitMethod);
         return methods.every((m) => m === methods[0]);
       },
-      { message: `All ${type} must use the same split method`, path: [type] }
+      { error: `All ${type} must use the same split method`, path: [type] }
     )
     .refine(
       (participants) => {
@@ -64,7 +64,7 @@ function expenseParticipants(type: 'payers' | 'owers') {
         }
         return true;
       },
-      { message: 'Percentage splits must sum to 100%' }
+      { error: 'Percentage splits must sum to 100%' }
     );
 }
 
@@ -77,7 +77,7 @@ function bothTaxTipOrNeither<K1 extends string, K2 extends string>(
     (data: Partial<Record<K1 | K2, unknown>>) =>
       !!data[amountKey] === !!data[typeKey],
     {
-      message: `${fieldName} requires both amount and type, or neither`,
+      error: `${fieldName} requires both amount and type, or neither`,
       path: [typeKey], // error points to the type field
     }
   );
@@ -110,7 +110,7 @@ function fixedSumsCorrectly(participantType: 'payers' | 'owers') {
       return true;
     },
     {
-      message: `Fixed ${participantType} must sum correctly`,
+      error: `Fixed ${participantType} must sum correctly`,
       path: [participantType],
     }
   );

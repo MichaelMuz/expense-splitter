@@ -17,7 +17,7 @@ export const createSettlementSchema = z
     amount: money,
   }).refine(
     data => data.fromGroupMemberId !== data.toGroupMemberId,
-    { message: 'Cannot settle payment to yourself', path: ['toGroupMemberId'] }
+    { error: 'Cannot settle payment to yourself', path: ['toGroupMemberId'] }
   );
 
 export type SettlementParams = z.infer<typeof settlementParamsSchema>;

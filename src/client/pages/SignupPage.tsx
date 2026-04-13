@@ -14,7 +14,7 @@ import { ErrorMessage } from '../components/ui/form-error';
 
 const signupFormSchema = signupSchema.extend({
   confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, { message: "Passwords must match", path: ["confirmPassword"] });
+}).refine(data => data.password === data.confirmPassword, { error: "Passwords must match", path: ["confirmPassword"] });
 type SignupForm = z.infer<typeof signupFormSchema>;
 
 export default function SignupPage() {
