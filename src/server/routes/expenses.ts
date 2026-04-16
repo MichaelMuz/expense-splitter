@@ -31,7 +31,7 @@ import {
 import { Prisma } from '@prisma/generated';
 import { groupIdParamSchema } from '@/shared/schemas/group';
 
-const expenseWithRelations = Prisma.validator<Prisma.ExpenseDefaultArgs>()({
+const expenseWithRelations = {
   include: {
     payers: {
       include: {
@@ -56,7 +56,7 @@ const expenseWithRelations = Prisma.validator<Prisma.ExpenseDefaultArgs>()({
       },
     },
   },
-});
+} satisfies Prisma.ExpenseDefaultArgs;
 type ExpenseWithRelations = Prisma.ExpenseGetPayload<
   typeof expenseWithRelations
 >;
