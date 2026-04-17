@@ -6,14 +6,14 @@ import { z } from 'zod';
 import { money } from './fields';
 
 export const settlementParamsSchema = z.object({
-  groupId: z.string().uuid('Invalid group ID'),
-  settlementId: z.string().uuid('Invalid settlement ID'),
+  groupId: z.uuid({ error: 'Invalid group ID' }),
+  settlementId: z.uuid({ error: 'Invalid settlement ID' }),
 });
 
 export const createSettlementSchema = z
   .object({
-    fromGroupMemberId: z.string().uuid('Invalid from member ID'),
-    toGroupMemberId: z.string().uuid('Invalid to member ID'),
+    fromGroupMemberId: z.uuid({ error: 'Invalid from member ID' }),
+    toGroupMemberId: z.uuid({ error: 'Invalid to member ID' }),
     amount: money,
   }).refine(
     data => data.fromGroupMemberId !== data.toGroupMemberId,
@@ -24,19 +24,19 @@ export type SettlementParams = z.infer<typeof settlementParamsSchema>;
 export type CreateSettlementInput = z.infer<typeof createSettlementSchema>;
 
 const settlementMemberSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  userId: z.string().uuid().nullable(),
+  userId: z.uuid().nullable(),
 });
 
 export const settlementSchema = z.object({
-  id: z.string().uuid(),
-  groupId: z.string().uuid(),
+  id: z.uuid(),
+  groupId: z.uuid(),
   amount: z.number().int(),
   paidAt: z.coerce.date(),
-  recordedBy: z.string().uuid(),
-  fromGroupMemberId: z.string().uuid(),
-  toGroupMemberId: z.string().uuid(),
+  recordedBy: z.uuid(),
+  fromGroupMemberId: z.uuid(),
+  toGroupMemberId: z.uuid(),
   fromMember: settlementMemberSchema,
   toMember: settlementMemberSchema,
 });

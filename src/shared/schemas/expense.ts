@@ -14,13 +14,13 @@ export const SplitMethodEnum = z.enum($Enums.SplitMethod);
 
 // Param validation schema
 export const expenseParamsSchema = z.object({
-  groupId: z.string().uuid('Invalid group ID'),
-  expenseId: z.string().uuid('Invalid expense ID'),
+  groupId: z.uuid({ error: 'Invalid group ID' }),
+  expenseId: z.uuid({ error: 'Invalid expense ID' }),
 });
 
 // Payer and Ower schema
 const expenseParticipantUnrefined = z.object({
-  groupMemberId: z.string().uuid('Invalid group member ID'),
+  groupMemberId: z.uuid({ error: 'Invalid group member ID' }),
   splitMethod: SplitMethodEnum,
   splitValue: z.number().int().nullable().optional(),
 });
@@ -148,9 +148,9 @@ export type PayerInput = z.infer<typeof expenseParticipant>;
 export type OwerInput = z.infer<typeof expenseParticipant>;
 
 const groupMemberSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  userId: z.string().uuid().nullable(),
+  userId: z.uuid().nullable(),
 });
 
 const expenseParticipantWithAmount = expenseParticipantUnrefined.extend({
@@ -159,8 +159,8 @@ const expenseParticipantWithAmount = expenseParticipantUnrefined.extend({
 }).refine(...splitValueRequired);
 
 const expenseSchema = z.object({
-  id: z.string().uuid(),
-  groupId: z.string().uuid(),
+  id: z.uuid(),
+  groupId: z.uuid(),
   name: z.string(),
   description: z.string().nullable(),
   baseAmount: z.number().int(),

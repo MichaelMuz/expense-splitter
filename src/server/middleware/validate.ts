@@ -3,12 +3,12 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import type { ZodSchema } from 'zod';
+import type { ZodType } from 'zod';
 import { ZodError } from 'zod';
 
 const zodValidatorFactory =
   <K extends keyof Request>(propName: K, mainErrorMessage: string) =>
-    (schema: ZodSchema<Request[K]>) =>
+    (schema: ZodType<Request[K]>) =>
       (req: Request, res: Response, next: NextFunction): void => {
         try {
           const validated = schema.parse(req[propName]);

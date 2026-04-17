@@ -5,7 +5,6 @@
 import { z } from 'zod';
 
 const email = z
-  .string()
   .email('Invalid email address')
   .min(1, 'Email is required');
 
@@ -26,7 +25,7 @@ export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export const userSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   email: email,
   createdAt: z.coerce.date(),
 })

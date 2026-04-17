@@ -14,11 +14,11 @@ export const createGroupSchema = z.object({
 });
 
 export const groupIdParamSchema = z.object({
-  groupId: z.string().uuid('Invalid group ID'),
+  groupId: z.uuid({ error: 'Invalid group ID' }),
 });
 
 export const inviteCodeParamSchema = z.object({
-  inviteCode: z.string().uuid('Invalid invite code'),
+  inviteCode: z.uuid({ error: 'Invalid invite code' }),
 });
 
 const memberName = z
@@ -29,7 +29,7 @@ const memberName = z
 export const joinInviteSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('claim'),
-    memberId: z.string().uuid('Invalid member id'),
+    memberId: z.uuid({ error: 'Invalid member id' }),
   }),
   z.object({
     type: z.literal('new'),
@@ -39,8 +39,8 @@ export const joinInviteSchema = z.discriminatedUnion('type', [
 
 // Member schemas
 export const memberIdParamSchema = z.object({
-  groupId: z.string().uuid('Invalid group ID'),
-  memberId: z.string().uuid('Invalid member ID'),
+  groupId: z.uuid({ error: 'Invalid group ID' }),
+  memberId: z.uuid({ error: 'Invalid member ID' }),
 });
 
 export const createMemberSchema = z.object({
@@ -62,17 +62,17 @@ export type JoinInviteInput = z.infer<typeof joinInviteSchema>;
 
 // This is a superset of the groupMemberSchema used in expense. If we need this data there we can consolidate later.
 const groupMemberSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
   role: z.string(),
-  userId: z.string().uuid().nullable(),
+  userId: z.uuid().nullable(),
   joinedAt: z.coerce.date(),
 });
 
 const groupBaseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  inviteCode: z.string().uuid(),
+  inviteCode: z.uuid(),
   createdAt: z.coerce.date(),
 });
 
