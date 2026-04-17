@@ -41,5 +41,3 @@ Marks the migration as applied in `_prisma_migrations` without running the SQL. 
 
 - [ ] **CI drift check.** Add a CI step that runs `bunx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code`, fails the PR if someone edited `schema.prisma` without running `bun gen-migration`.
 - [ ] **Seeding.** Wire up `prisma db seed` so local dev data survives the `gen-migration` reset.
-- [ ] **Refresh README.md.** Current Quick Start references nonexistent scripts (`prisma:migrate`, `server`, `client`).
-- [ ] **Verify Dockerfile locally.** Build the backend image and confirm `migrate deploy` actually runs on startup (`prisma` CLI is in dependencies, but hasn't been tested end-to-end).
