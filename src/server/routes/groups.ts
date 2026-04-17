@@ -101,9 +101,7 @@ router.post(
     );
 
     if (existingMember) {
-      res
-        .status(409)
-        .json({ error: 'You are already a member of this group' });
+      res.status(409).json({ error: 'You are already a member of this group' });
       return;
     }
 

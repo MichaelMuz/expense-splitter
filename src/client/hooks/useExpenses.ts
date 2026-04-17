@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
-import { expenseResponseSchema, expensesResponseSchema, type CreateExpenseInput} from '../../shared/schemas/expense';
+import {
+  expenseResponseSchema,
+  expensesResponseSchema,
+  type CreateExpenseInput,
+} from '../../shared/schemas/expense';
 
 export function useExpenses(groupId: string) {
   return useQuery({
@@ -18,7 +22,9 @@ export function useExpense(groupId: string, expenseId: string) {
   return useQuery({
     queryKey: ['expenses', groupId, expenseId],
     queryFn: async () => {
-      const response = await api.get(`/groups/${groupId}/expenses/${expenseId}`);
+      const response = await api.get(
+        `/groups/${groupId}/expenses/${expenseId}`
+      );
       return expenseResponseSchema.parse(response.data).expense;
     },
     enabled: !!groupId && !!expenseId,
@@ -46,7 +52,10 @@ export function useUpdateExpense(groupId: string, expenseId: string) {
 
   return useMutation({
     mutationFn: async (input: CreateExpenseInput) => {
-      const response = await api.put(`/groups/${groupId}/expenses/${expenseId}`, input);
+      const response = await api.put(
+        `/groups/${groupId}/expenses/${expenseId}`,
+        input
+      );
       return expenseResponseSchema.parse(response.data).expense;
     },
     onSuccess: () => {
@@ -60,7 +69,8 @@ export function useDeleteExpense(groupId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (expenseId: string) => api.delete(`/groups/${groupId}/expenses/${expenseId}`),
+    mutationFn: (expenseId: string) =>
+      api.delete(`/groups/${groupId}/expenses/${expenseId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses', groupId] });
       queryClient.invalidateQueries({ queryKey: [groupId] });

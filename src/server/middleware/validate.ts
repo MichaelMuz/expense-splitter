@@ -8,26 +8,26 @@ import { ZodError } from 'zod';
 
 const zodValidatorFactory =
   <K extends keyof Request>(propName: K, mainErrorMessage: string) =>
-    (schema: ZodType<Request[K]>) =>
-      (req: Request, res: Response, next: NextFunction): void => {
-        try {
-          const validated = schema.parse(req[propName]);
-          req[propName] = validated;
-          next();
-        } catch (error) {
-          if (error instanceof ZodError) {
-            res.status(400).json({
-              error: mainErrorMessage,
-              details: error.issues.map((err) => ({
-                field: err.path.join('.'),
-                message: err.message,
-              })),
-            });
-          } else {
-            next(error);
-          }
-        }
-      };
+  (schema: ZodType<Request[K]>) =>
+  (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      const validated = schema.parse(req[propName]);
+      req[propName] = validated;
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          error: mainErrorMessage,
+          details: error.issues.map((err) => ({
+            field: err.path.join('.'),
+            message: err.message,
+          })),
+        });
+      } else {
+        next(error);
+      }
+    }
+  };
 
 /**
  * Middleware factory to validate request body against a Zod schema

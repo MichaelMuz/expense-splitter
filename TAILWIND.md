@@ -19,16 +19,16 @@ Ask three questions about any element:
 
 ### Width / Height
 
-| Class       | What it does                              |
-|-------------|-------------------------------------------|
-| `w-full`    | width: 100% of parent                     |
-| `w-screen`  | width: 100% of the viewport (full window) |
-| `w-64`      | width: 256px (fixed)                      |
-| `h-full`    | height: 100% of parent                    |
-| `h-screen`  | height: 100% of the viewport              |
-| `max-w-sm`  | never wider than 384px                    |
-| `max-w-2xl` | never wider than 672px                    |
-| `max-w-full`| never wider than 100% of parent           |
+| Class        | What it does                              |
+| ------------ | ----------------------------------------- |
+| `w-full`     | width: 100% of parent                     |
+| `w-screen`   | width: 100% of the viewport (full window) |
+| `w-64`       | width: 256px (fixed)                      |
+| `h-full`     | height: 100% of parent                    |
+| `h-screen`   | height: 100% of the viewport              |
+| `max-w-sm`   | never wider than 384px                    |
+| `max-w-2xl`  | never wider than 672px                    |
+| `max-w-full` | never wider than 100% of parent           |
 
 `max-w-*` constrains width — it does NOT expand an element that's already smaller.
 Block elements (div, header, nav, main) already take up 100% width by default.
@@ -38,35 +38,35 @@ Use `max-w-*` when you want to prevent something from getting too wide.
 
 The number maps to multiples of 4px:
 
-| Number | px  |
-|--------|-----|
-| 1      | 4px |
-| 2      | 8px |
-| 3      | 12px|
-| 4      | 16px|
-| 6      | 24px|
-| 8      | 32px|
-| 12     | 48px|
-| 16     | 64px|
+| Number | px   |
+| ------ | ---- |
+| 1      | 4px  |
+| 2      | 8px  |
+| 3      | 12px |
+| 4      | 16px |
+| 6      | 24px |
+| 8      | 32px |
+| 12     | 48px |
+| 16     | 64px |
 
 ### Padding (space inside the box)
 
-| Class  | What it does                  |
-|--------|-------------------------------|
-| `p-4`  | padding 16px on all 4 sides   |
-| `px-4` | padding 16px left + right     |
-| `py-4` | padding 16px top + bottom     |
-| `pt-4` | padding 16px top only         |
-| `pb-4` | padding 16px bottom only      |
+| Class  | What it does                |
+| ------ | --------------------------- |
+| `p-4`  | padding 16px on all 4 sides |
+| `px-4` | padding 16px left + right   |
+| `py-4` | padding 16px top + bottom   |
+| `pt-4` | padding 16px top only       |
+| `pb-4` | padding 16px bottom only    |
 
 ### Margin (space outside the box, pushing neighbors away)
 
-| Class     | What it does                       |
-|-----------|------------------------------------|
-| `m-4`     | margin 16px on all 4 sides         |
+| Class     | What it does                                            |
+| --------- | ------------------------------------------------------- |
+| `m-4`     | margin 16px on all 4 sides                              |
 | `mx-auto` | margin left+right = auto (centers the box horizontally) |
-| `mt-4`    | margin 16px top only               |
-| `mb-4`    | margin 16px bottom only            |
+| `mt-4`    | margin 16px top only                                    |
+| `mb-4`    | margin 16px bottom only                                 |
 
 `mx-auto` only centers a block if it also has a `max-w-*` or `w-*` — otherwise the
 block already fills 100% width and there's nothing to center.
@@ -98,13 +98,13 @@ Without flex:         With flex:
 └──────────┘
 ```
 
-| Class               | What it does                                      |
-|---------------------|---------------------------------------------------|
-| `flex`              | children go side by side (horizontal row)         |
-| `flex-col`          | children stack vertically (same as default, but now you can use justify/items) |
-| `flex-wrap`         | children wrap to next line if they don't fit      |
+| Class       | What it does                                                                   |
+| ----------- | ------------------------------------------------------------------------------ |
+| `flex`      | children go side by side (horizontal row)                                      |
+| `flex-col`  | children stack vertically (same as default, but now you can use justify/items) |
+| `flex-wrap` | children wrap to next line if they don't fit                                   |
 
-### justify-* (horizontal positioning along the row)
+### justify-\* (horizontal positioning along the row)
 
 Only works when `flex` is also present.
 
@@ -116,7 +116,7 @@ justify-between: [A          B          C  ]
 justify-around:  [   A         B         C ]
 ```
 
-### items-* (vertical alignment within the row)
+### items-\* (vertical alignment within the row)
 
 Only works when `flex` is also present.
 
@@ -130,12 +130,12 @@ items-end:         A B C  ← aligned to bottom
 
 ### gap (space between children)
 
-| Class   | What it does                      |
-|---------|-----------------------------------|
-| `gap-2` | 8px between every child           |
-| `gap-4` | 16px between every child          |
-| `gap-x-4` | 16px gap horizontally only      |
-| `gap-y-4` | 16px gap vertically only        |
+| Class     | What it does               |
+| --------- | -------------------------- |
+| `gap-2`   | 8px between every child    |
+| `gap-4`   | 16px between every child   |
+| `gap-x-4` | 16px gap horizontally only |
+| `gap-y-4` | 16px gap vertically only   |
 
 Prefer `gap` over margins on children — it's cleaner.
 
@@ -150,12 +150,12 @@ flex flex-col gap-4                 ← vertical list with spacing
 
 ### Grid (for when flex isn't enough)
 
-| Class             | What it does                          |
-|-------------------|---------------------------------------|
-| `grid`            | enable grid layout on parent          |
-| `grid-cols-2`     | 2 equal columns                       |
-| `grid-cols-3`     | 3 equal columns                       |
-| `col-span-2`      | this child spans 2 columns            |
+| Class         | What it does                 |
+| ------------- | ---------------------------- |
+| `grid`        | enable grid layout on parent |
+| `grid-cols-2` | 2 equal columns              |
+| `grid-cols-3` | 3 equal columns              |
+| `col-span-2`  | this child spans 2 columns   |
 
 Use grid when you want fixed columns (e.g. a card grid). Use flex when things
 should size themselves (e.g. a nav bar).
@@ -168,53 +168,53 @@ should size themselves (e.g. a nav bar).
 
 shadcn gives you semantic color names that respect dark mode automatically:
 
-| Class                  | What it does                             |
-|------------------------|------------------------------------------|
-| `bg-background`        | page background color                    |
-| `bg-muted`             | slightly off-background (for cards etc.) |
-| `bg-primary`           | your primary brand color                 |
-| `text-foreground`      | main text color                          |
-| `text-muted-foreground`| dimmed/secondary text                    |
-| `text-primary`         | primary color but for text               |
+| Class                   | What it does                             |
+| ----------------------- | ---------------------------------------- |
+| `bg-background`         | page background color                    |
+| `bg-muted`              | slightly off-background (for cards etc.) |
+| `bg-primary`            | your primary brand color                 |
+| `text-foreground`       | main text color                          |
+| `text-muted-foreground` | dimmed/secondary text                    |
+| `text-primary`          | primary color but for text               |
 
 Raw colors also available: `bg-red-500`, `text-blue-600`, `bg-gray-100` etc.
 The number (100–900) is lightness — 100 is very light, 900 is very dark.
 
 ### Border
 
-| Class          | What it does                   |
-|----------------|--------------------------------|
-| `border`       | 1px border on all sides        |
-| `border-b`     | 1px border on bottom only      |
-| `border-t`     | 1px border on top only         |
-| `rounded`      | slightly rounded corners       |
-| `rounded-md`   | medium rounded corners         |
-| `rounded-full` | fully round (circle/pill)      |
-| `border-border`| use the theme's border color   |
+| Class           | What it does                 |
+| --------------- | ---------------------------- |
+| `border`        | 1px border on all sides      |
+| `border-b`      | 1px border on bottom only    |
+| `border-t`      | 1px border on top only       |
+| `rounded`       | slightly rounded corners     |
+| `rounded-md`    | medium rounded corners       |
+| `rounded-full`  | fully round (circle/pill)    |
+| `border-border` | use the theme's border color |
 
 ### Typography
 
-| Class          | What it does                   |
-|----------------|--------------------------------|
-| `text-sm`      | small text (14px)              |
-| `text-base`    | normal text (16px)             |
-| `text-lg`      | large text (18px)              |
-| `text-xl`      | extra large (20px)             |
-| `text-2xl`     | 24px                           |
-| `font-medium`  | medium weight                  |
-| `font-semibold`| semi-bold                      |
-| `font-bold`    | bold                           |
-| `text-center`  | center-align text              |
+| Class           | What it does       |
+| --------------- | ------------------ |
+| `text-sm`       | small text (14px)  |
+| `text-base`     | normal text (16px) |
+| `text-lg`       | large text (18px)  |
+| `text-xl`       | extra large (20px) |
+| `text-2xl`      | 24px               |
+| `font-medium`   | medium weight      |
+| `font-semibold` | semi-bold          |
+| `font-bold`     | bold               |
+| `text-center`   | center-align text  |
 
 ### Shadows & Misc
 
-| Class        | What it does                |
-|--------------|-----------------------------|
-| `shadow`     | small drop shadow           |
-| `shadow-md`  | medium drop shadow          |
-| `opacity-50` | 50% transparent             |
+| Class            | What it does              |
+| ---------------- | ------------------------- |
+| `shadow`         | small drop shadow         |
+| `shadow-md`      | medium drop shadow        |
+| `opacity-50`     | 50% transparent           |
 | `cursor-pointer` | mouse cursor becomes hand |
-| `hidden`     | display: none               |
+| `hidden`         | display: none             |
 
 ---
 
@@ -223,10 +223,10 @@ The number (100–900) is lightness — 100 is very light, 900 is very dark.
 Prefix any class with a breakpoint to only apply it at that screen size and above:
 
 | Prefix | Applies when screen is... |
-|--------|--------------------------|
-| `sm:`  | ≥ 640px                  |
-| `md:`  | ≥ 768px                  |
-| `lg:`  | ≥ 1024px                 |
+| ------ | ------------------------- |
+| `sm:`  | ≥ 640px                   |
+| `md:`  | ≥ 768px                   |
+| `lg:`  | ≥ 1024px                  |
 
 Example: `hidden md:flex` = hidden on mobile, flex on desktop.
 Example: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
@@ -235,12 +235,12 @@ Example: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
 
 ## 5. State Prefixes
 
-| Prefix    | Applies when...                |
-|-----------|--------------------------------|
-| `hover:`  | mouse is over the element      |
-| `focus:`  | element is focused (keyboard)  |
-| `active:` | element is being clicked       |
-| `disabled:`| element has disabled attribute|
+| Prefix      | Applies when...                |
+| ----------- | ------------------------------ |
+| `hover:`    | mouse is over the element      |
+| `focus:`    | element is focused (keyboard)  |
+| `active:`   | element is being clicked       |
+| `disabled:` | element has disabled attribute |
 
 Example: `hover:bg-muted` = background changes on hover.
 

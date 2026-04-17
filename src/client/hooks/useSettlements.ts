@@ -1,7 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import type { CreateSettlementInput } from '../../shared/schemas/settlement';
-import { settlementResponseSchema, settlementsResponseSchema } from '../../shared/schemas/settlement';
+import {
+  settlementResponseSchema,
+  settlementsResponseSchema,
+} from '../../shared/schemas/settlement';
 
 export function useSettlements(groupId: string) {
   return useQuery({
@@ -34,7 +37,8 @@ export function useDeleteSettlement(groupId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (settlementId: string) => api.delete(`/groups/${groupId}/settlements/${settlementId}`),
+    mutationFn: (settlementId: string) =>
+      api.delete(`/groups/${groupId}/settlements/${settlementId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settlements', groupId] });
       queryClient.invalidateQueries({ queryKey: [groupId] });

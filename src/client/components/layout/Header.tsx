@@ -1,7 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 import { LogOutIcon, UserIcon } from 'lucide-react';
 
 export function Header() {
@@ -9,7 +15,9 @@ export function Header() {
 
   return (
     <nav className="flex justify-between items-center px-6 py-3 border-b">
-      <Link to="/"><strong>Expense Splitter</strong></Link>
+      <Link to="/">
+        <strong>Expense Splitter</strong>
+      </Link>
       <div className="flex gap-4">
         {isAuthenticated ? (
           <>
@@ -18,7 +26,9 @@ export function Header() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost"><UserIcon /></Button>
+                <Button variant="ghost">
+                  <UserIcon />
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>

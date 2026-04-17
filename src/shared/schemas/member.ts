@@ -19,11 +19,15 @@ export const memberResponseSchema = z.object({
 });
 
 export const membersResponseSchema = z.object({
-  members: z.array(memberBaseSchema.extend({
-    user: z.object({
-      email: z.email(),
-    }).nullable(),
-  })),
+  members: z.array(
+    memberBaseSchema.extend({
+      user: z
+        .object({
+          email: z.email(),
+        })
+        .nullable(),
+    })
+  ),
 });
 
 export type MemberResponse = z.infer<typeof memberResponseSchema>;

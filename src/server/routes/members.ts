@@ -94,7 +94,11 @@ router.use(
   '/:groupId/members/:memberId',
   validateParams(memberIdParamSchema),
   checkGroupMembership,
-  async (req: Request<{ groupId: string; memberId: string }>, res: Response, next) => {
+  async (
+    req: Request<{ groupId: string; memberId: string }>,
+    res: Response,
+    next
+  ) => {
     const memberId = req.params.memberId;
     const groupMembership = req.groupMembership!;
 
@@ -118,7 +122,10 @@ router.use(
 router.patch(
   '/:groupId/members/:memberId',
   validateBody(updateMemberSchema),
-  async (req: Request<{ groupId: string; memberId: string }>, res: Response) => {
+  async (
+    req: Request<{ groupId: string; memberId: string }>,
+    res: Response
+  ) => {
     const groupId = req.params.groupId; // Validated by middleware
     const memberId = req.params.memberId;
     const updateMemberData = req.body as UpdateMemberInput;
@@ -155,7 +162,10 @@ router.patch(
  */
 router.delete(
   '/:groupId/members/:memberId',
-  async (req: Request<{ groupId: string; memberId: string }>, res: Response) => {
+  async (
+    req: Request<{ groupId: string; memberId: string }>,
+    res: Response
+  ) => {
     const groupId = req.params.groupId; // Validated by middleware
     const memberId = req.params.memberId;
 

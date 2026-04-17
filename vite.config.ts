@@ -11,7 +11,10 @@ export default defineConfig({
       '@client': path.resolve(__dirname, './src/client'),
       '@server': path.resolve(__dirname, './src/server'),
       '@shared': path.resolve(__dirname, './src/shared'),
-      '@prisma/generated': path.resolve(__dirname, './prisma/generated/prisma/browser.ts'),
+      '@prisma/generated': path.resolve(
+        __dirname,
+        './prisma/generated/prisma/browser.ts'
+      ),
     },
   },
   root: '.',

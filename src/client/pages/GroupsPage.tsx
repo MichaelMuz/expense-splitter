@@ -10,7 +10,7 @@ export default function GroupsPage() {
   return (
     <Layout>
       <div className="flex items-center justify-between">
-        <h1 className='font-bold text-lg'>My Groups</h1>
+        <h1 className="font-bold text-lg">My Groups</h1>
         <Button asChild>
           <Link to="/groups/create">Create Group</Link>
         </Button>
@@ -21,12 +21,14 @@ export default function GroupsPage() {
       {groups && groups.length === 0 && <p>No groups yet.</p>}
 
       {groups && groups.length > 0 && (
-        <div className='flex flex-col gap-y-4 mt-4'>
+        <div className="flex flex-col gap-y-4 mt-4">
           {groups.map((group) => (
             <Link to={`/groups/${group.id}`} key={group.id}>
-              <Card className='flex flex-col px-4 py-2 hover:bg-muted'>
+              <Card className="flex flex-col px-4 py-2 hover:bg-muted">
                 <span>{group.name}</span>
-                <span className='text-sm text-muted-foreground'>{group.members.length} members</span>
+                <span className="text-sm text-muted-foreground">
+                  {group.members.length} members
+                </span>
               </Card>
             </Link>
           ))}

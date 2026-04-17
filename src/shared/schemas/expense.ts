@@ -26,11 +26,14 @@ const expenseParticipantUnrefined = z.object({
 });
 
 const splitValueRequired = tuple(
-  (p: z.infer<typeof expenseParticipantUnrefined>) => p.splitMethod === "EVEN" || p.splitValue != null,
-  { error: "Amount is required", path: ["splitValue"] }
+  (p: z.infer<typeof expenseParticipantUnrefined>) =>
+    p.splitMethod === 'EVEN' || p.splitValue != null,
+  { error: 'Amount is required', path: ['splitValue'] }
 );
 
-export const expenseParticipant = expenseParticipantUnrefined.refine(...splitValueRequired);
+export const expenseParticipant = expenseParticipantUnrefined.refine(
+  ...splitValueRequired
+);
 
 const expenseName = z
   .string()
@@ -153,10 +156,12 @@ const groupMemberSchema = z.object({
   userId: z.uuid().nullable(),
 });
 
-const expenseParticipantWithAmount = expenseParticipantUnrefined.extend({
-  groupMember: groupMemberSchema,
-  calculatedAmount: z.number().int(),
-}).refine(...splitValueRequired);
+const expenseParticipantWithAmount = expenseParticipantUnrefined
+  .extend({
+    groupMember: groupMemberSchema,
+    calculatedAmount: z.number().int(),
+  })
+  .refine(...splitValueRequired);
 
 const expenseSchema = z.object({
   id: z.uuid(),

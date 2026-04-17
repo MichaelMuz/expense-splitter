@@ -2,10 +2,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Layout } from '../components/layout/Layout';
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginInput } from '@/shared/schemas/auth';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { ErrorMessage } from '../components/ui/form-error';
@@ -13,17 +19,21 @@ import { ErrorMessage } from '../components/ui/form-error';
 export default function LoginPage() {
   const { loginMutation } = useAuth();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
-    mode: "onBlur"
-  })
+    mode: 'onBlur',
+  });
 
   const onSubmit = (data: LoginInput) => {
     loginMutation.mutate(data, { onSuccess: () => navigate('/groups') });
   };
 
   return (
-    <Layout >
+    <Layout>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className="w-full max-w-sm mx-auto">
           <CardHeader>
@@ -38,26 +48,36 @@ export default function LoginPage() {
             <div className="flex flex-col gap-6">
               <ErrorMessage error={loginMutation.error} />
               <div className="grid gap-2">
-                <label>Email
-                  <Input type="email" {...register("email")} placeholder="user@example.com" />
+                <label>
+                  Email
+                  <Input
+                    type="email"
+                    {...register('email')}
+                    placeholder="user@example.com"
+                  />
                   <ErrorMessage error={errors.email} />
                 </label>
               </div>
               <div className="grid gap-2">
-                <label>Password
-                  <Input type="password" {...register("password")} />
+                <label>
+                  Password
+                  <Input type="password" {...register('password')} />
                   <ErrorMessage error={errors.password} />
                 </label>
               </div>
             </div>
           </CardContent>
           <CardFooter className="flex-col gap-2">
-            <Button type="submit" disabled={loginMutation.isPending} className="w-full">
+            <Button
+              type="submit"
+              disabled={loginMutation.isPending}
+              className="w-full"
+            >
               {loginMutation.isPending ? 'Logging in...' : 'Login'}
             </Button>
           </CardFooter>
         </Card>
       </form>
-    </Layout >
+    </Layout>
   );
 }

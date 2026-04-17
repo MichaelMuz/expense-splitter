@@ -13,5 +13,5 @@ export function tuple<T extends unknown[]>(...args: T) {
 }
 
 export function assert(value: boolean, msg: string): asserts value {
-  if (!value) throw Error(msg)
+  if (!value) throw Error(msg);
 }

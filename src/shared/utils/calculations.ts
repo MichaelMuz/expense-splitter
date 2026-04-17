@@ -4,7 +4,12 @@
  */
 
 import type { TaxTipType } from '@prisma/generated';
-import type { ExpenseData, PayerInput, OwerInput, Expense } from '../schemas/expense';
+import type {
+  ExpenseData,
+  PayerInput,
+  OwerInput,
+  Expense,
+} from '../schemas/expense';
 import { assertUnreachable, assert } from './type-helpers';
 import type { Settlement } from '../schemas/settlement';
 
@@ -133,7 +138,7 @@ export function calculateOwerAmounts(
     owers.map((o) => [
       o.groupMemberId,
       (baseAmounts.get(o.groupMemberId) || 0) +
-      (taxTipAmounts.get(o.groupMemberId) || 0),
+        (taxTipAmounts.get(o.groupMemberId) || 0),
     ])
   );
 }
@@ -147,7 +152,7 @@ export function calculateOwerAmounts(
  */
 export function calculateNetBalances(
   expenses: Expense[],
-  settlements: Settlement[],
+  settlements: Settlement[]
 ): Map<string, Map<string, number>> {
   const owedToOwerToAmount = new Map<string, Map<string, number>>();
 
@@ -170,21 +175,25 @@ export function calculateNetBalances(
   };
 
   // Process each expense
-  expenses.forEach(expense => {
+  expenses.forEach((expense) => {
     const pToPaid = calculatePayerAmounts(expense, expense.payers);
     const pToOwes = calculateOwerAmounts(expense, expense.owers);
 
     // Simplify members that both paid and partook
-    new Set(pToPaid.keys()).intersection(new Set(pToOwes.keys())).forEach((mId) => {
-      const paid = pToPaid.get(mId) || 0;
-      const owes = pToOwes.get(mId) || 0;
-      const maxExch = Math.min(paid, owes);
-      pToPaid.set(mId, paid - maxExch);
-      pToOwes.set(mId, owes - maxExch);
-    });
+    new Set(pToPaid.keys())
+      .intersection(new Set(pToOwes.keys()))
+      .forEach((mId) => {
+        const paid = pToPaid.get(mId) || 0;
+        const owes = pToOwes.get(mId) || 0;
+        const maxExch = Math.min(paid, owes);
+        pToPaid.set(mId, paid - maxExch);
+        pToOwes.set(mId, owes - maxExch);
+      });
 
     // Delete any entries where only 0 dollars are paid/owed
-    [pToPaid, pToOwes].forEach(mp => mp.forEach((v, k) => (v == 0) ? mp.delete(k) : undefined));
+    [pToPaid, pToOwes].forEach((mp) =>
+      mp.forEach((v, k) => (v == 0 ? mp.delete(k) : undefined))
+    );
 
     // If we sort the list of payers by amount paid desc and owers by amount owed desc then we can two pointer
     const [paidIter, owesIter] = [pToPaid, pToOwes].map((p) =>
@@ -198,7 +207,12 @@ export function calculateNetBalances(
     let [payerId, amountPaid] = moveIter(paidIter);
     let [owerId, amountOwed] = moveIter(owesIter);
 
-    while (payerId != undefined && owerId != undefined && amountPaid != undefined && amountOwed != undefined) {
+    while (
+      payerId != undefined &&
+      owerId != undefined &&
+      amountPaid != undefined &&
+      amountOwed != undefined
+    ) {
       const maxExch = Math.min(amountPaid, amountOwed);
       amountOwed -= maxExch;
       amountPaid -= maxExch;
@@ -219,7 +233,7 @@ export function calculateNetBalances(
   });
 
   // Apply settlements (reduce debts)
-  settlements.forEach(settlement => {
+  settlements.forEach((settlement) => {
     addToMapUnlessZero(
       settlement.toGroupMemberId,
       settlement.fromGroupMemberId,
@@ -228,19 +242,17 @@ export function calculateNetBalances(
   });
 
   // Delete pairwise owing relationships, Can't have A owe B and B owe A
-  Array.from(owedToOwerToAmount.entries()).forEach(([owedId, owerToAmount]) => (
+  Array.from(owedToOwerToAmount.entries()).forEach(([owedId, owerToAmount]) =>
     Array.from(owerToAmount.entries()).forEach(([owerId, amount]) => {
       // if owed also owes in the ower's map then we cancel these out
-      const owedOwesAmount = owedToOwerToAmount.get(owerId)?.get(owedId)
+      const owedOwesAmount = owedToOwerToAmount.get(owerId)?.get(owedId);
       if (owedOwesAmount) {
         const maxExch = Math.min(amount, owedOwesAmount);
-        addToMapUnlessZero(owedId, owerId, -maxExch)
-        addToMapUnlessZero(owerId, owedId, -maxExch)
+        addToMapUnlessZero(owedId, owerId, -maxExch);
+        addToMapUnlessZero(owerId, owedId, -maxExch);
       }
-
-
     })
-  ))
+  );
 
   return owedToOwerToAmount;
 }

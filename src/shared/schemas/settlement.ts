@@ -15,10 +15,11 @@ export const createSettlementSchema = z
     fromGroupMemberId: z.uuid({ error: 'Invalid from member ID' }),
     toGroupMemberId: z.uuid({ error: 'Invalid to member ID' }),
     amount: money,
-  }).refine(
-    data => data.fromGroupMemberId !== data.toGroupMemberId,
-    { error: 'Cannot settle payment to yourself', path: ['toGroupMemberId'] }
-  );
+  })
+  .refine((data) => data.fromGroupMemberId !== data.toGroupMemberId, {
+    error: 'Cannot settle payment to yourself',
+    path: ['toGroupMemberId'],
+  });
 
 export type SettlementParams = z.infer<typeof settlementParamsSchema>;
 export type CreateSettlementInput = z.infer<typeof createSettlementSchema>;
@@ -43,10 +44,10 @@ export const settlementSchema = z.object({
 
 export const settlementResponseSchema = z.object({
   settlement: settlementSchema,
-})
+});
 
 export const settlementsResponseSchema = z.object({
-  settlements: z.array(settlementSchema)
+  settlements: z.array(settlementSchema),
 });
 
 export type Settlement = z.infer<typeof settlementSchema>;

@@ -120,33 +120,29 @@ router.post(
  * GET /api/auth/me
  * Get current authenticated user
  */
-router.get(
-  '/me',
-  authenticateToken,
-  async (req: Request, res: Response) => {
-    if (!req.user) {
-      res.status(401).json({ error: 'Not authenticated' });
-      return;
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.userId },
-    });
-
-    if (!user) {
-      res.status(404).json({ error: 'User not found' });
-      return;
-    }
-
-    const responseData: MeResponse = {
-      user: {
-        id: user.id,
-        email: user.email,
-        createdAt: user.createdAt,
-      },
-    };
-    res.json(responseData);
+router.get('/me', authenticateToken, async (req: Request, res: Response) => {
+  if (!req.user) {
+    res.status(401).json({ error: 'Not authenticated' });
+    return;
   }
-);
+
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.userId },
+  });
+
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  const responseData: MeResponse = {
+    user: {
+      id: user.id,
+      email: user.email,
+      createdAt: user.createdAt,
+    },
+  };
+  res.json(responseData);
+});
 
 export default router;
