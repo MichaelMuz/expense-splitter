@@ -3,12 +3,12 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import type { ZodSchema } from 'zod';
+import type { ZodType } from 'zod';
 import { ZodError } from 'zod';
 
 const zodValidatorFactory =
   <K extends keyof Request>(propName: K, mainErrorMessage: string) =>
-  (schema: ZodSchema) =>
+  (schema: ZodType<Request[K]>) =>
   (req: Request, res: Response, next: NextFunction): void => {
     try {
       const validated = schema.parse(req[propName]);
@@ -18,7 +18,7 @@ const zodValidatorFactory =
       if (error instanceof ZodError) {
         res.status(400).json({
           error: mainErrorMessage,
-          details: error.errors.map((err) => ({
+          details: error.issues.map((err) => ({
             field: err.path.join('.'),
             message: err.message,
           })),

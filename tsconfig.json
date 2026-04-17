@@ -15,12 +15,12 @@
     "noEmit": true,
 
     // Path aliases
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@server/*": ["./src/server/*"],
       "@client/*": ["./src/client/*"],
-      "@shared/*": ["./src/shared/*"]
+      "@shared/*": ["./src/shared/*"],
+      "@prisma/generated": ["./prisma/generated/prisma/client"]
     },
 
     // Best practices (Type safety paradise!)

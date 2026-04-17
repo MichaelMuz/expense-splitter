@@ -2,30 +2,22 @@
  * Auth context and hook for managing authentication state
  */
 
+import { createContext, useContext, type ReactNode } from 'react';
 import {
-  createContext,
-  useContext,
-  type ReactNode,
-} from 'react';
-import { useMutation, useQuery, useQueryClient, type UseMutationResult } from '@tanstack/react-query';
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+} from '@tanstack/react-query';
 import api from '../lib/api';
-import {
-  setToken,
-  getToken,
-  removeToken,
-} from '../lib/auth';
+import { setToken, getToken, removeToken } from '../lib/auth';
 import type {
   LoginInput,
   SignupInput,
   User,
   LoginResponse as AuthResponse,
 } from '@/shared/schemas/auth';
-import {
-  loginResponseSchema,
-  meResponseSchema,
-} from '@/shared/schemas/auth';
-
-
+import { loginResponseSchema, meResponseSchema } from '@/shared/schemas/auth';
 
 interface AuthContextValue {
   user: User | undefined;
@@ -44,7 +36,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const queryClient = useQueryClient();
-  const queryKey = ['auth', 'me']
+  const queryKey = ['auth', 'me'];
 
   // Fetch current user if token exists
   const { data: user, isLoading } = useQuery({

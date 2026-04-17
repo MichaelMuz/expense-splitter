@@ -28,10 +28,10 @@ import {
   calculatePayerAmounts,
   calculateOwerAmounts,
 } from '../../shared/utils/calculations';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/generated';
 import { groupIdParamSchema } from '@/shared/schemas/group';
 
-const expenseWithRelations = Prisma.validator<Prisma.ExpenseDefaultArgs>()({
+const expenseWithRelations = {
   include: {
     payers: {
       include: {
@@ -56,7 +56,7 @@ const expenseWithRelations = Prisma.validator<Prisma.ExpenseDefaultArgs>()({
       },
     },
   },
-});
+} satisfies Prisma.ExpenseDefaultArgs;
 type ExpenseWithRelations = Prisma.ExpenseGetPayload<
   typeof expenseWithRelations
 >;
@@ -122,11 +122,11 @@ function formatExpenseWithCalculations(expense: ExpenseWithRelations) {
  * Middleware to check that the owers and payers specified are part of the group
  */
 async function checkOwersPayersGroupMembership(
-  req: Request,
+  req: Request<{ groupId: string }>,
   res: Response,
   next: NextFunction
 ) {
-  const groupId = req.params.groupId!; // Validated by middleware running before this
+  const groupId = req.params.groupId; // Validated by middleware running before this
   const owers = req.body.owers as CreateExpenseInput['owers'];
   const payers = req.body.payers as CreateExpenseInput['payers'];
 
@@ -164,27 +164,23 @@ router.get(
   '/:groupId/expenses',
   validateParams(groupIdParamSchema),
   checkGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
+  async (req: Request<{ groupId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
 
-      // Fetch all expenses for the group
-      const expenses = await prisma.expense.findMany({
-        where: { groupId },
-        ...expenseWithRelations,
-        orderBy: { createdAt: 'desc' },
-      });
+    // Fetch all expenses for the group
+    const expenses = await prisma.expense.findMany({
+      where: { groupId },
+      ...expenseWithRelations,
+      orderBy: { createdAt: 'desc' },
+    });
 
-      // Format with calculations
-      const formattedExpenses = expenses.map(formatExpenseWithCalculations);
+    // Format with calculations
+    const formattedExpenses = expenses.map(formatExpenseWithCalculations);
 
-      const responseData: ExpensesResponse = {
-        expenses: formattedExpenses,
-      };
-      res.json(responseData);
-    } catch (error) {
-      next(error);
-    }
+    const responseData: ExpensesResponse = {
+      expenses: formattedExpenses,
+    };
+    res.json(responseData);
   }
 );
 
@@ -198,32 +194,28 @@ router.post(
   validateBody(createExpenseSchema),
   checkGroupMembership,
   checkOwersPayersGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
-      const { payers, owers, ...baseInfo } = req.body as CreateExpenseInput;
+  async (req: Request<{ groupId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const { payers, owers, ...baseInfo } = req.body as CreateExpenseInput;
 
-      // Create expense with payers and owers
-      const expense = await prisma.expense.create({
-        data: {
-          groupId,
-          ...baseInfo,
-          payers: { create: payers },
-          owers: { create: owers },
-        },
-        ...expenseWithRelations,
-      });
+    // Create expense with payers and owers
+    const expense = await prisma.expense.create({
+      data: {
+        groupId,
+        ...baseInfo,
+        payers: { create: payers },
+        owers: { create: owers },
+      },
+      ...expenseWithRelations,
+    });
 
-      // Format with calculations
-      const formattedExpense = formatExpenseWithCalculations(expense);
+    // Format with calculations
+    const formattedExpense = formatExpenseWithCalculations(expense);
 
-      const responseData: ExpenseResponse = {
-        expense: formattedExpense,
-      };
-      res.status(201).json(responseData);
-    } catch (error) {
-      next(error);
-    }
+    const responseData: ExpenseResponse = {
+      expense: formattedExpense,
+    };
+    res.status(201).json(responseData);
   }
 );
 
@@ -235,35 +227,31 @@ router.get(
   '/:groupId/expenses/:expenseId',
   validateParams(expenseParamsSchema),
   checkGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
-      const expenseId = req.params.expenseId!; // Validated by middleware
+  async (req: Request<{ groupId: string; expenseId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const expenseId = req.params.expenseId;
 
-      // Fetch expense
-      const expense = await prisma.expense.findFirst({
-        where: {
-          id: expenseId,
-          groupId,
-        },
-        ...expenseWithRelations,
-      });
+    // Fetch expense
+    const expense = await prisma.expense.findFirst({
+      where: {
+        id: expenseId,
+        groupId,
+      },
+      ...expenseWithRelations,
+    });
 
-      if (!expense) {
-        res.status(404).json({ error: 'Expense not found' });
-        return;
-      }
-
-      // Format with calculations
-      const formattedExpense = formatExpenseWithCalculations(expense);
-
-      const responseData: ExpenseResponse = {
-        expense: formattedExpense,
-      };
-      res.json(responseData);
-    } catch (error) {
-      next(error);
+    if (!expense) {
+      res.status(404).json({ error: 'Expense not found' });
+      return;
     }
+
+    // Format with calculations
+    const formattedExpense = formatExpenseWithCalculations(expense);
+
+    const responseData: ExpenseResponse = {
+      expense: formattedExpense,
+    };
+    res.json(responseData);
   }
 );
 
@@ -277,46 +265,42 @@ router.put(
   validateBody(createExpenseSchema),
   checkGroupMembership,
   checkOwersPayersGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
-      const expenseId = req.params.expenseId!; // Validated by middleware
-      const { payers, owers, ...baseInfo } = req.body as CreateExpenseInput;
+  async (req: Request<{ groupId: string; expenseId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const expenseId = req.params.expenseId;
+    const { payers, owers, ...baseInfo } = req.body as CreateExpenseInput;
 
-      // Verify expense exists
-      const existingExpense = await prisma.expense.findFirst({
-        where: {
-          id: expenseId,
-          groupId,
-        },
-      });
+    // Verify expense exists
+    const existingExpense = await prisma.expense.findFirst({
+      where: {
+        id: expenseId,
+        groupId,
+      },
+    });
 
-      if (!existingExpense) {
-        res.status(404).json({ error: 'Expense not found' });
-        return;
-      }
-
-      // Update expense
-      const expense = await prisma.expense.update({
-        where: { id: expenseId },
-        data: {
-          ...baseInfo,
-          payers: { deleteMany: {}, create: payers },
-          owers: { deleteMany: {}, create: owers },
-        },
-        ...expenseWithRelations,
-      });
-
-      // Format with calculations
-      const formattedExpense = formatExpenseWithCalculations(expense);
-
-      const responseData: ExpenseResponse = {
-        expense: formattedExpense,
-      };
-      res.json(responseData);
-    } catch (error) {
-      next(error);
+    if (!existingExpense) {
+      res.status(404).json({ error: 'Expense not found' });
+      return;
     }
+
+    // Update expense
+    const expense = await prisma.expense.update({
+      where: { id: expenseId },
+      data: {
+        ...baseInfo,
+        payers: { deleteMany: {}, create: payers },
+        owers: { deleteMany: {}, create: owers },
+      },
+      ...expenseWithRelations,
+    });
+
+    // Format with calculations
+    const formattedExpense = formatExpenseWithCalculations(expense);
+
+    const responseData: ExpenseResponse = {
+      expense: formattedExpense,
+    };
+    res.json(responseData);
   }
 );
 
@@ -328,28 +312,24 @@ router.delete(
   '/:groupId/expenses/:expenseId',
   validateParams(expenseParamsSchema),
   checkGroupMembership,
-  async (req, res, next) => {
-    try {
-      const groupId = req.params.groupId!; // Validated by middleware
-      const expenseId = req.params.expenseId!; // Validated by middleware
+  async (req: Request<{ groupId: string; expenseId: string }>, res) => {
+    const groupId = req.params.groupId; // Validated by middleware
+    const expenseId = req.params.expenseId;
 
-      // Delete expense (cascade will delete payers and owers)
-      const result = await prisma.expense.deleteMany({
-        where: {
-          id: expenseId,
-          groupId,
-        },
-      });
+    // Delete expense (cascade will delete payers and owers)
+    const result = await prisma.expense.deleteMany({
+      where: {
+        id: expenseId,
+        groupId,
+      },
+    });
 
-      if (result.count === 0) {
-        res.status(404).json({ error: 'Expense not found' });
-        return;
-      }
-
-      res.status(204).send();
-    } catch (error) {
-      next(error);
+    if (result.count === 0) {
+      res.status(404).json({ error: 'Expense not found' });
+      return;
     }
+
+    res.status(204).send();
   }
 );
 

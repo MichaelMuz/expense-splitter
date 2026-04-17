@@ -50,24 +50,20 @@ const router = Router();
 router.get(
   '/join/:inviteCode',
   validateParams(inviteCodeParamSchema),
-  async (req: Request, res: Response, next) => {
-    try {
-      const { inviteCode } = req.params;
+  async (req: Request<{ inviteCode: string }>, res: Response) => {
+    const { inviteCode } = req.params;
 
-      const group = await prisma.group.findFirst({
-        where: { inviteCode },
-        ...groupWithMembersAndExpenseCount,
-      });
-      if (!group) {
-        res.status(404).json({ error: 'Group not found' });
-        return;
-      }
-
-      const responseData: GroupResponse = { group };
-      res.json(responseData);
-    } catch (error) {
-      next(error);
+    const group = await prisma.group.findFirst({
+      where: { inviteCode },
+      ...groupWithMembersAndExpenseCount,
+    });
+    if (!group) {
+      res.status(404).json({ error: 'Group not found' });
+      return;
     }
+
+    const responseData: GroupResponse = { group };
+    res.json(responseData);
   }
 );
 
@@ -82,80 +78,74 @@ router.post(
   '/join/:inviteCode',
   validateParams(inviteCodeParamSchema),
   validateBody(joinInviteSchema),
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = req.user!;
-      const { inviteCode } = req.params;
-      const joinInput = req.body as JoinInviteInput;
+  async (req: Request<{ inviteCode: string }>, res: Response) => {
+    const user = req.user!;
+    const { inviteCode } = req.params;
+    const joinInput = req.body as JoinInviteInput;
 
-      // Find group by invite code
-      const group = await prisma.group.findUnique({
-        where: { inviteCode },
-        include: {
-          members: true,
+    // Find group by invite code
+    const group = await prisma.group.findUnique({
+      where: { inviteCode },
+      include: {
+        members: true,
+      },
+    });
+    if (!group) {
+      res.status(404).json({ error: 'Invalid invite code' });
+      return;
+    }
+
+    // Check if user is already a member
+    const existingMember = group.members.find(
+      (member) => member.userId === user.userId
+    );
+
+    if (existingMember) {
+      res.status(409).json({ error: 'You are already a member of this group' });
+      return;
+    }
+
+    let member;
+    if (joinInput.type === 'claim') {
+      // Claim existing virtual user
+      member = group.members.find(
+        (member) => member.id === joinInput.memberId && !member.userId
+      );
+      if (!member) {
+        res.status(403).json({ error: 'User not found or not virtual' });
+        return;
+      }
+      // Update this member to have a real userId that points to logged in user
+      member = await prisma.groupMember.update({
+        where: { id: member.id },
+        data: {
+          userId: user.userId,
         },
       });
-      if (!group) {
-        res.status(404).json({ error: 'Invalid invite code' });
-        return;
-      }
-
-      // Check if user is already a member
-      const existingMember = group.members.find(
-        (member) => member.userId === user.userId
-      );
-
-      if (existingMember) {
-        res
-          .status(409)
-          .json({ error: 'You are already a member of this group' });
-        return;
-      }
-
-      let member;
-      if (joinInput.type === 'claim') {
-        // Claim existing virtual user
-        member = group.members.find(
-          (member) => member.id === joinInput.memberId && !member.userId
-        );
-        if (!member) {
-          res.status(403).json({ error: 'User not found or not virtual' });
-          return;
-        }
-        // Update this member to have a real userId that points to logged in user
-        member = await prisma.groupMember.update({
-          where: { id: member.id },
-          data: {
-            userId: user.userId,
-          },
-        });
-      } else if (joinInput.type === 'new') {
-        // Create new member
-        member = await prisma.groupMember.create({
-          data: {
-            groupId: group.id,
-            userId: user.userId,
-            name: joinInput.memberName,
-            role: 'member',
-          },
-        });
-      } else {
-        assertUnreachable(joinInput);
-      }
-
-      const responseData: JoinGroupResponse = {
-        group: {
-          id: group.id,
-          name: group.name,
-          inviteCode: group.inviteCode,
-          createdAt: group.createdAt,
+    } else if (joinInput.type === 'new') {
+      // Create new member
+      member = await prisma.groupMember.create({
+        data: {
+          groupId: group.id,
+          userId: user.userId,
+          name: joinInput.memberName,
+          role: 'member',
         },
-        member,
-      };
-      res.status(201).json(responseData);
-    } catch (error) {
-      next(error);
+      });
+    } else {
+      assertUnreachable(joinInput);
     }
+
+    const responseData: JoinGroupResponse = {
+      group: {
+        id: group.id,
+        name: group.name,
+        inviteCode: group.inviteCode,
+        createdAt: group.createdAt,
+      },
+      member,
+    };
+    res.status(201).json(responseData);
   }
 );
 
@@ -166,34 +156,30 @@ router.post(
 router.post(
   '/',
   validateBody(createGroupSchema),
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = req.user!; // checked in auth
-      const createGroupData = req.body as CreateGroupInput;
-      const { name } = createGroupData;
+  async (req: Request, res: Response) => {
+    const user = req.user!; // checked in auth
+    const createGroupData = req.body as CreateGroupInput;
+    const { name } = createGroupData;
 
-      // Create group with owner as first member
-      const group = await prisma.group.create({
-        data: {
-          name,
-          members: {
-            create: {
-              userId: user.userId,
-              name: user.email.split('@')[0]!, // Default to email prefix
-              role: 'owner',
-            },
+    // Create group with owner as first member
+    const group = await prisma.group.create({
+      data: {
+        name,
+        members: {
+          create: {
+            userId: user.userId,
+            name: user.email.split('@')[0]!, // Default to email prefix
+            role: 'owner',
           },
         },
-        include: {
-          members: true,
-        },
-      });
+      },
+      include: {
+        members: true,
+      },
+    });
 
-      const responseData: CreateGroupResponse = { group };
-      res.status(201).json(responseData);
-    } catch (error) {
-      next(error);
-    }
+    const responseData: CreateGroupResponse = { group };
+    res.status(201).json(responseData);
   }
 );
 
@@ -201,29 +187,25 @@ router.post(
  * GET /api/groups
  * List all groups the user is a member of
  */
-router.get('/', async (req: Request, res: Response, next) => {
-  try {
-    const user = req.user!; // checked in auth
+router.get('/', async (req: Request, res: Response) => {
+  const user = req.user!; // checked in auth
 
-    const groups = await prisma.group.findMany({
-      where: {
-        members: {
-          some: {
-            userId: user.userId,
-          },
+  const groups = await prisma.group.findMany({
+    where: {
+      members: {
+        some: {
+          userId: user.userId,
         },
       },
-      ...groupWithMembersAndExpenseCount,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    },
+    ...groupWithMembersAndExpenseCount,
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-    const responseData: GroupsResponse = { groups };
-    res.json(responseData);
-  } catch (error) {
-    next(error);
-  }
+  const responseData: GroupsResponse = { groups };
+  res.json(responseData);
 });
 
 /**
@@ -233,29 +215,25 @@ router.get('/', async (req: Request, res: Response, next) => {
 router.get(
   '/:groupId',
   validateParams(groupIdParamSchema),
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = req.user!; // checked in auth
+  async (req: Request<{ groupId: string }>, res: Response) => {
+    const user = req.user!; // checked in auth
 
-      const { groupId } = req.params;
+    const { groupId } = req.params;
 
-      const group = await prisma.group.findFirst({
-        where: {
-          id: groupId,
-          members: { some: { userId: user.userId } },
-        },
-        ...groupWithMembersAndExpenseCount,
-      });
-      if (!group) {
-        res.status(404).json({ error: 'Group not found' });
-        return;
-      }
-
-      const responseData: GroupResponse = { group };
-      res.json(responseData);
-    } catch (error) {
-      next(error);
+    const group = await prisma.group.findFirst({
+      where: {
+        id: groupId,
+        members: { some: { userId: user.userId } },
+      },
+      ...groupWithMembersAndExpenseCount,
+    });
+    if (!group) {
+      res.status(404).json({ error: 'Group not found' });
+      return;
     }
+
+    const responseData: GroupResponse = { group };
+    res.json(responseData);
   }
 );
 
@@ -266,44 +244,40 @@ router.get(
 router.delete(
   '/:groupId',
   validateParams(groupIdParamSchema),
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = req.user!;
-      const { groupId } = req.params;
+  async (req: Request<{ groupId: string }>, res: Response) => {
+    const user = req.user!;
+    const { groupId } = req.params;
 
-      // Find group and check ownership
-      const group = await prisma.group.findUnique({
-        where: { id: groupId },
-        include: {
-          members: true,
-        },
-      });
-      if (!group) {
-        res.status(404).json({ error: 'Group not found' });
-        return;
-      }
-
-      // Check if user is the owner
-      const ownerMember = group.members.find(
-        (member) => member.userId === user.userId && member.role === 'owner'
-      );
-
-      if (!ownerMember) {
-        res
-          .status(403)
-          .json({ error: 'Only the group owner can delete the group' });
-        return;
-      }
-
-      // Delete group (cascade deletes members, expenses, etc.)
-      await prisma.group.delete({
-        where: { id: groupId },
-      });
-
-      res.status(204).send();
-    } catch (error) {
-      next(error);
+    // Find group and check ownership
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+      include: {
+        members: true,
+      },
+    });
+    if (!group) {
+      res.status(404).json({ error: 'Group not found' });
+      return;
     }
+
+    // Check if user is the owner
+    const ownerMember = group.members.find(
+      (member) => member.userId === user.userId && member.role === 'owner'
+    );
+
+    if (!ownerMember) {
+      res
+        .status(403)
+        .json({ error: 'Only the group owner can delete the group' });
+      return;
+    }
+
+    // Delete group (cascade deletes members, expenses, etc.)
+    await prisma.group.delete({
+      where: { id: groupId },
+    });
+
+    res.status(204).send();
   }
 );
 

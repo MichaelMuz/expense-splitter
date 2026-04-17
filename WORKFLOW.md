@@ -447,4 +447,3 @@ For each group:
 - Start simple (even split, single payer)
 - Show advanced options (fixed amounts, multiple payers) when needed
 - Don't overwhelm with all features upfront
-

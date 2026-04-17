@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
-import type { GroupMember } from '@prisma/client';
+import type { GroupMember } from '@prisma/generated';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -15,11 +15,11 @@ declare global {
  * Middleware to check that the currently authenticated user is part of the group they are accessing
  */
 export async function checkGroupMembership(
-  req: Request,
+  req: Request<{ groupId: string }>,
   res: Response,
   next: NextFunction
 ) {
-  const groupId = req.params.groupId!; // Validated by middleware run before this
+  const groupId = req.params.groupId; // Validated by middleware run before this
   const userId = req.user!.userId;
 
   // Check membership

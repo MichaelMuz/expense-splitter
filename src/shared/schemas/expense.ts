@@ -3,34 +3,37 @@
  */
 
 import { z } from 'zod';
-import { $Enums } from '@prisma/client';
+import { $Enums } from '@prisma/generated';
 import { tuple } from '../utils/type-helpers';
 import { calculateTotalExpenseAmount } from '../utils/calculations';
 import { money } from './fields';
 
 // TODO Would be really cool to use postgres data validation features for things like this
-export const TaxTipTypeEnum = z.nativeEnum($Enums.TaxTipType);
-export const SplitMethodEnum = z.nativeEnum($Enums.SplitMethod);
+export const TaxTipTypeEnum = z.enum($Enums.TaxTipType);
+export const SplitMethodEnum = z.enum($Enums.SplitMethod);
 
 // Param validation schema
 export const expenseParamsSchema = z.object({
-  groupId: z.string().uuid('Invalid group ID'),
-  expenseId: z.string().uuid('Invalid expense ID'),
+  groupId: z.uuid({ error: 'Invalid group ID' }),
+  expenseId: z.uuid({ error: 'Invalid expense ID' }),
 });
 
 // Payer and Ower schema
 const expenseParticipantUnrefined = z.object({
-  groupMemberId: z.string().uuid('Invalid group member ID'),
+  groupMemberId: z.uuid({ error: 'Invalid group member ID' }),
   splitMethod: SplitMethodEnum,
   splitValue: z.number().int().nullable().optional(),
 });
 
 const splitValueRequired = tuple(
-  (p: z.infer<typeof expenseParticipantUnrefined>) => p.splitMethod === "EVEN" || p.splitValue != null,
-  { message: "Amount is required", path: ["splitValue"] }
+  (p: z.infer<typeof expenseParticipantUnrefined>) =>
+    p.splitMethod === 'EVEN' || p.splitValue != null,
+  { error: 'Amount is required', path: ['splitValue'] }
 );
 
-export const expenseParticipant = expenseParticipantUnrefined.refine(...splitValueRequired);
+export const expenseParticipant = expenseParticipantUnrefined.refine(
+  ...splitValueRequired
+);
 
 const expenseName = z
   .string()
@@ -47,7 +50,7 @@ function expenseParticipants(type: 'payers' | 'owers') {
         const methods = participants.map((p) => p.splitMethod);
         return methods.every((m) => m === methods[0]);
       },
-      { message: `All ${type} must use the same split method`, path: [type] }
+      { error: `All ${type} must use the same split method`, path: [type] }
     )
     .refine(
       (participants) => {
@@ -64,7 +67,7 @@ function expenseParticipants(type: 'payers' | 'owers') {
         }
         return true;
       },
-      { message: 'Percentage splits must sum to 100%' }
+      { error: 'Percentage splits must sum to 100%' }
     );
 }
 
@@ -77,7 +80,7 @@ function bothTaxTipOrNeither<K1 extends string, K2 extends string>(
     (data: Partial<Record<K1 | K2, unknown>>) =>
       !!data[amountKey] === !!data[typeKey],
     {
-      message: `${fieldName} requires both amount and type, or neither`,
+      error: `${fieldName} requires both amount and type, or neither`,
       path: [typeKey], // error points to the type field
     }
   );
@@ -110,7 +113,7 @@ function fixedSumsCorrectly(participantType: 'payers' | 'owers') {
       return true;
     },
     {
-      message: `Fixed ${participantType} must sum correctly`,
+      error: `Fixed ${participantType} must sum correctly`,
       path: [participantType],
     }
   );
@@ -148,19 +151,21 @@ export type PayerInput = z.infer<typeof expenseParticipant>;
 export type OwerInput = z.infer<typeof expenseParticipant>;
 
 const groupMemberSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  userId: z.string().uuid().nullable(),
+  userId: z.uuid().nullable(),
 });
 
-const expenseParticipantWithAmount = expenseParticipantUnrefined.extend({
-  groupMember: groupMemberSchema,
-  calculatedAmount: z.number().int(),
-}).refine(...splitValueRequired);
+const expenseParticipantWithAmount = expenseParticipantUnrefined
+  .extend({
+    groupMember: groupMemberSchema,
+    calculatedAmount: z.number().int(),
+  })
+  .refine(...splitValueRequired);
 
 const expenseSchema = z.object({
-  id: z.string().uuid(),
-  groupId: z.string().uuid(),
+  id: z.uuid(),
+  groupId: z.uuid(),
   name: z.string(),
   description: z.string().nullable(),
   baseAmount: z.number().int(),

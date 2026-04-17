@@ -5,7 +5,15 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
   js.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {
@@ -21,11 +29,18 @@ export default tseslint.config(
         'warn',
         { argsIgnorePattern: '^_' },
       ],
+      '@typescript-eslint/no-deprecated': 'warn',
     },
     settings: {
       react: {
-        version: 'detect',
+        version: '19',
       },
+    },
+  },
+  {
+    files: ['src/client/components/ui/**'],
+    rules: {
+      '@typescript-eslint/no-deprecated': 'off', // shadcn generated code uses ElementRef
     },
   },
   {

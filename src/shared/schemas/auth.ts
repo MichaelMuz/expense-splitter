@@ -4,10 +4,7 @@
 
 import { z } from 'zod';
 
-const email = z
-  .string()
-  .email('Invalid email address')
-  .min(1, 'Email is required');
+const email = z.email('Invalid email address').min(1, 'Email is required');
 
 export const signupSchema = z.object({
   email: email,
@@ -26,19 +23,19 @@ export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export const userSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   email: email,
   createdAt: z.coerce.date(),
-})
+});
 
 export const loginResponseSchema = z.object({
   token: z.string(),
   user: userSchema,
-})
+});
 
 export const meResponseSchema = z.object({
   user: userSchema,
-})
+});
 
 export type User = z.infer<typeof userSchema>;
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
