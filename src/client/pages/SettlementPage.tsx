@@ -92,7 +92,7 @@ function SettlementPageCore({ group }: { group: Group }) {
               {createSettlement.isPending ? 'Creating...' : 'Create'}
             </Button>
             <Button variant='secondary' disabled={createSettlement.isPending} className="w-full" asChild>
-              <Link to='/groups/${group.id}'>Cancel</Link>
+              <Link to={`/groups/${group.id}`}>Cancel</Link>
             </Button>
           </CardFooter>
         </Card>
