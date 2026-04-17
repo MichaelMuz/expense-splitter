@@ -9,7 +9,7 @@ FROM docker.io/oven/bun:1-slim
 WORKDIR /app
 COPY package.json bun.lock ./
 RUN bun install --production
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=build /app/prisma/generated ./prisma/generated
 COPY . .
 EXPOSE 3000
 CMD ["bun", "run", "start"]
