@@ -38,6 +38,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/client/components/ui/**'],
+    rules: {
+      '@typescript-eslint/no-deprecated': 'off', // shadcn generated code uses ElementRef
+    },
+  },
+  {
     ignores: ['dist/', 'node_modules/', '.vite/'],
   }
 );
