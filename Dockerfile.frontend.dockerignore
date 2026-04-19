@@ -8,3 +8,4 @@
 !tsconfig.json
 !postcss.config.js
 !public
+!prisma
