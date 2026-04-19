@@ -10,10 +10,10 @@ import { validateBody, validateParams } from '../middleware/validate';
 import {
   createGroupSchema,
   groupIdParamSchema,
+  joinInviteSchema,
   type JoinInviteInput,
   type CreateGroupInput,
   inviteCodeParamSchema,
-  joinInviteSchema,
   type GroupResponse,
   type GroupsResponse,
   type CreateGroupResponse,

@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { memberName } from './member';
 
 export const createGroupSchema = z.object({
   name: z
@@ -21,11 +22,6 @@ export const inviteCodeParamSchema = z.object({
   inviteCode: z.uuid({ error: 'Invalid invite code' }),
 });
 
-const memberName = z
-  .string()
-  .min(1, 'Member name is required')
-  .max(100, 'Member name must be less than 100 characters');
-
 export const joinInviteSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('claim'),
@@ -43,21 +39,12 @@ export const memberIdParamSchema = z.object({
   memberId: z.uuid({ error: 'Invalid member ID' }),
 });
 
-export const createMemberSchema = z.object({
-  name: memberName,
-});
-
-export const updateMemberSchema = z.object({
-  name: memberName,
-});
 
 // Type exports
 export type CreateGroupInput = z.infer<typeof createGroupSchema>;
 export type GroupIdParam = z.infer<typeof groupIdParamSchema>;
 export type InviteCodeParam = z.infer<typeof inviteCodeParamSchema>;
 export type MemberIdParam = z.infer<typeof memberIdParamSchema>;
-export type CreateMemberInput = z.infer<typeof createMemberSchema>;
-export type UpdateMemberInput = z.infer<typeof updateMemberSchema>;
 export type JoinInviteInput = z.infer<typeof joinInviteSchema>;
 
 // This is a superset of the groupMemberSchema used in expense. If we need this data there we can consolidate later.

@@ -10,14 +10,12 @@ import { validateBody, validateParams } from '../middleware/validate';
 import {
   groupIdParamSchema,
   memberIdParamSchema,
-  createMemberSchema,
-  updateMemberSchema,
-  type CreateMemberInput,
-  type UpdateMemberInput,
 } from '../../shared/schemas/group';
 import {
   type MemberResponse,
   type MembersResponse,
+  createMemberSchema,
+  type CreateMemberInput,
 } from '../../shared/schemas/member';
 import { checkGroupMembership } from '../middleware/group-membership';
 
@@ -121,14 +119,14 @@ router.use(
  */
 router.patch(
   '/:groupId/members/:memberId',
-  validateBody(updateMemberSchema),
+  validateBody(createMemberSchema),
   async (
     req: Request<{ groupId: string; memberId: string }>,
     res: Response
   ) => {
     const groupId = req.params.groupId; // Validated by middleware
     const memberId = req.params.memberId;
-    const updateMemberData = req.body as UpdateMemberInput;
+    const updateMemberData = req.body as CreateMemberInput;
     const { name } = updateMemberData;
 
     const updatedMember = await (async () => {

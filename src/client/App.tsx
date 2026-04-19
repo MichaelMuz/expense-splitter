@@ -14,6 +14,7 @@ import AddExpensePage from './pages/AddExpensePage';
 import SettlementPage from './pages/SettlementPage';
 import { Toaster } from './components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
+import CreateMemberPage from './pages/CreateMemberPage';
 
 function App() {
   return (
@@ -79,6 +80,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SettlementPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/groups/:groupId/members/new"
+              element={
+                <ProtectedRoute>
+                  <CreateMemberPage />
                 </ProtectedRoute>
               }
             />

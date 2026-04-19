@@ -60,6 +60,9 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
         </TabsContent>
 
         <TabsContent value="members">
+          <Button asChild>
+            <Link to={`/groups/${groupId}/members/new`}>Add virtual member</Link>
+          </Button>
           <MembersList
             groupMembers={group.members}
             inviteCode={group.inviteCode}

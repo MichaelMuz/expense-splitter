@@ -4,6 +4,18 @@
 
 import { z } from 'zod';
 
+// exported for other shared type schemas
+export const memberName = z
+  .string()
+  .min(1, 'Member name is required')
+  .max(100, 'Member name must be less than 100 characters');
+
+export const createMemberSchema = z.object({
+  name: memberName,
+});
+
+export type CreateMemberInput = z.infer<typeof createMemberSchema>;
+
 const memberBaseSchema = z.object({
   id: z.uuid(),
   name: z.string(),
