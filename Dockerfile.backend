@@ -12,4 +12,5 @@ RUN bun install --production
 COPY --from=build /app/prisma/generated ./prisma/generated
 COPY . .
 EXPOSE 3000
+USER bun
 CMD ["bun", "run", "start"]

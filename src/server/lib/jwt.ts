@@ -1,12 +1,14 @@
 /**
  * JWT token utilities for authentication
  * TODO: Maybe use Lucia instead of doing our own auth in the future?
+ * Also maybe we bump down the jwt expiration? Would need token rotation logic though
  */
 
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
 const JWT_SECRET = z.string().min(32).parse(process.env.JWT_SECRET);
+const JWT_ALGO = 'HS256';
 const JWT_EXPIRES_IN = '7d';
 
 const TokenPayloadSchema = z.object({
@@ -23,6 +25,7 @@ export type TokenPayload = z.infer<typeof TokenPayloadSchema>;
 export function signToken(payload: TokenPayload): string {
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
+    algorithm: JWT_ALGO,
   });
 }
 
@@ -34,7 +37,7 @@ export function signToken(payload: TokenPayload): string {
  */
 export function verifyToken(token: string): TokenPayload {
   try {
-    const decoded = TokenPayloadSchema.parse(jwt.verify(token, JWT_SECRET));
+    const decoded = TokenPayloadSchema.parse(jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGO] }));
     return decoded;
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
