@@ -168,7 +168,7 @@ router.post(
         members: {
           create: {
             userId: user.userId,
-            name: user.email.split('@')[0]!, // Default to email prefix
+            name: createGroupData.ownerName,
             role: 'owner',
           },
         },

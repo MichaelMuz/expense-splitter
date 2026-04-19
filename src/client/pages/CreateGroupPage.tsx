@@ -47,11 +47,17 @@ export default function CreateGroupPage() {
             <ErrorMessage error={createGroup.error} />
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
               <label>
                 Group name
                 <Input {...register('name')} />
                 <ErrorMessage error={errors.name} />
+              </label>
+
+              <label>
+                Your name
+                <Input {...register('ownerName')} />
+                <ErrorMessage error={errors.ownerName} />
               </label>
             </div>
           </CardContent>

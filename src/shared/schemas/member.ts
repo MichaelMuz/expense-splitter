@@ -7,6 +7,7 @@ import { z } from 'zod';
 // exported for other shared type schemas
 export const memberName = z
   .string()
+  .trim()
   .min(1, 'Member name is required')
   .max(100, 'Member name must be less than 100 characters');
 

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { memberName } from './member';
 
 export const createGroupSchema = z.object({
+  ownerName: memberName,
   name: z
     .string()
     //TODO: add trime to basically every string, we rarely basically never want pure whitespace
