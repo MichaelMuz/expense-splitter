@@ -2,7 +2,7 @@
  * Password hashing and verification utilities
  */
 
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 
 const SALT_ROUNDS = 10;
 
