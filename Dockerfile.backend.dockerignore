@@ -5,3 +5,4 @@
 !bun.lock
 !tsconfig.json
 !prisma
+!prisma.config.ts
