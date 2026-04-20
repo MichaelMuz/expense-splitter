@@ -64,6 +64,7 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
             <Link to={`/groups/${groupId}/members/new`}>Add virtual member</Link>
           </Button>
           <MembersList
+            groupId={group.id}
             groupMembers={group.members}
             inviteCode={group.inviteCode}
           />

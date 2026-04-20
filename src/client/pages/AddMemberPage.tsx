@@ -14,12 +14,14 @@ import {
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { ErrorMessage } from '../components/ui/form-error';
-import { useCreateMember } from '../hooks/useMembers';
+import { useCreateMember, useUpdateMember } from '../hooks/useMembers';
 import { createMemberSchema, type CreateMemberInput } from '@/shared/schemas/member';
+import type { UseMutationResult } from '@tanstack/react-query';
+import { useGroup } from '../hooks/useGroups';
+import { Loading } from '../components/layout/Loading';
 
-function CreateMemberPageCore({ groupId }: { groupId: string; }) {
+function AddMemberPageCore({ groupId, initialName, mutation }: { groupId: string; initialName?: string; mutation: UseMutationResult<any, Error, CreateMemberInput>; }) {
     const navigate = useNavigate();
-    const createMember = useCreateMember(groupId);
 
     const {
         register,
@@ -27,11 +29,12 @@ function CreateMemberPageCore({ groupId }: { groupId: string; }) {
         formState: { errors },
     } = useForm<CreateMemberInput>({
         resolver: zodResolver(createMemberSchema),
+        defaultValues: initialName ? { "name": initialName } : undefined,
         mode: 'onBlur',
     });
 
     const onSubmit = (data: CreateMemberInput) => {
-        createMember.mutate(
+        mutation.mutate(
             data,
             { onSuccess: () => navigate(`/groups/${groupId}`) }
         );
@@ -42,8 +45,8 @@ function CreateMemberPageCore({ groupId }: { groupId: string; }) {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Card className="w-full max-w-sm mx-auto">
                     <CardHeader>
-                        <CardTitle>Create virtual member</CardTitle>
-                        <ErrorMessage error={createMember.error} />
+                        <CardTitle>{initialName ? "Update member" : "Create virtual member"}</CardTitle>
+                        <ErrorMessage error={mutation.error} />
                     </CardHeader>
                     <CardContent>
                         <label>
@@ -58,14 +61,16 @@ function CreateMemberPageCore({ groupId }: { groupId: string; }) {
                     <CardFooter className="flex-col gap-2">
                         <Button
                             type="submit"
-                            disabled={createMember.isPending}
+                            disabled={mutation.isPending}
                             className="w-full"
                         >
-                            {createMember.isPending ? 'Creating...' : 'Create'}
+                            {mutation.isPending ?
+                                initialName ? 'Updating...' : 'Creating...'
+                                : initialName ? 'Update' : 'Create'}
                         </Button>
                         <Button
                             variant="secondary"
-                            disabled={createMember.isPending}
+                            disabled={mutation.isPending}
                             className="w-full"
                             asChild
                         >
@@ -78,8 +83,25 @@ function CreateMemberPageCore({ groupId }: { groupId: string; }) {
     );
 }
 
-export default function CreateMemberPage() {
-    const { groupId } = useParams<{ groupId: string }>();
+function UpdateMemberPage({ groupId, memberId }: { groupId: string, memberId: string }) {
+    const { data: group, isLoading } = useGroup(groupId);
+    const updateGroupMember = useUpdateMember(groupId, memberId);
+    if (isLoading) {
+        return <Loading name="member" />;
+    }
+    const name = group?.members.find(m => m.id === memberId)?.name;
+    if (!name) return <Navigate to={`/groups/${groupId}`} replace />;
+
+    return <AddMemberPageCore groupId={groupId} initialName={name} mutation={updateGroupMember} />;
+}
+
+function CreateMemberPage({ groupId }: { groupId: string }) {
+    const createGroupMember = useCreateMember(groupId)
+    return <AddMemberPageCore groupId={groupId} mutation={createGroupMember} />;
+}
+
+export default function AddMemberPage() {
+    const { groupId, memberId } = useParams<{ groupId: string, memberId?: string }>();
     if (!groupId) return <Navigate to="/groups" replace />;
-    return <CreateMemberPageCore groupId={groupId} />;
+    return memberId ? <UpdateMemberPage groupId={groupId} memberId={memberId} /> : <CreateMemberPage groupId={groupId} />;
 }

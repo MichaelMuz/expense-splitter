@@ -114,10 +114,10 @@ router.use(
 );
 
 /**
- * PATCH /api/groups/:groupId/members/:memberId
+ * PUT /api/groups/:groupId/members/:memberId
  * Update member name
  */
-router.patch(
+router.put(
   '/:groupId/members/:memberId',
   validateBody(createMemberSchema),
   async (

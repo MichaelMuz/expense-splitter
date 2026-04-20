@@ -23,3 +23,18 @@ export function useCreateMember(groupId: string) {
         },
     });
 }
+
+export function useUpdateMember(groupId: string, memberId: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (input: CreateMemberInput) => {
+            const response = await api.put(`/groups/${groupId}/members/${memberId}`, input);
+            const validated = memberResponseSchema.parse(response.data);
+            return validated;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
+        },
+    });
+}
