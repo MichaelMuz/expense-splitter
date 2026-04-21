@@ -42,7 +42,7 @@ export function MembersList({
       <Card className="flex items-center px-4 py-2 justify-between bg-muted">
         <div className="flex flex-col">
           <div>Invite code</div>
-          <div className="text-sm text-muted-foreground">{inviteUrl}</div>
+          <div className="text-sm text-muted-foreground [overflow-wrap:anywhere]">{inviteUrl}</div>
         </div>
         <Button
           variant="outline"
