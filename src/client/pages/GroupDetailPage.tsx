@@ -61,7 +61,9 @@ function GroupDetailCore({ groupId }: { groupId: string }) {
 
         <TabsContent value="members">
           <Button asChild>
-            <Link to={`/groups/${groupId}/members/new`}>Add virtual member</Link>
+            <Link to={`/groups/${groupId}/members/new`}>
+              Add virtual member
+            </Link>
           </Button>
           <MembersList
             groupId={group.id}

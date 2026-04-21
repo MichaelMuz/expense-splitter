@@ -40,7 +40,6 @@ export const memberIdParamSchema = z.object({
   memberId: z.uuid({ error: 'Invalid member ID' }),
 });
 
-
 // Type exports
 export type CreateGroupInput = z.infer<typeof createGroupSchema>;
 export type GroupIdParam = z.infer<typeof groupIdParamSchema>;

@@ -128,17 +128,17 @@ export default function ExpenseForm({
                         onCheckedChange={(checked) =>
                           checked
                             ? setValue('payers', [
-                              ...payers,
-                              {
-                                groupMemberId: m.id,
-                                splitMethod: payerSplitType,
-                                splitValue: null,
-                              },
-                            ])
+                                ...payers,
+                                {
+                                  groupMemberId: m.id,
+                                  splitMethod: payerSplitType,
+                                  splitValue: null,
+                                },
+                              ])
                             : setValue(
-                              'payers',
-                              payers.filter((p) => p.groupMemberId !== m.id)
-                            )
+                                'payers',
+                                payers.filter((p) => p.groupMemberId !== m.id)
+                              )
                         }
                       />
                       {m.name}
@@ -148,7 +148,9 @@ export default function ExpenseForm({
                             name={`payers.${index}.splitValue`}
                             control={control}
                           />
-                          <ErrorMessage error={errors.payers?.[index]?.splitValue} />
+                          <ErrorMessage
+                            error={errors.payers?.[index]?.splitValue}
+                          />
                         </>
                       )}
                     </label>
@@ -192,17 +194,17 @@ export default function ExpenseForm({
                         onCheckedChange={(checked) =>
                           checked
                             ? setValue('owers', [
-                              ...owers,
-                              {
-                                groupMemberId: m.id,
-                                splitMethod: owerSplitType,
-                                splitValue: null,
-                              },
-                            ])
+                                ...owers,
+                                {
+                                  groupMemberId: m.id,
+                                  splitMethod: owerSplitType,
+                                  splitValue: null,
+                                },
+                              ])
                             : setValue(
-                              'owers',
-                              owers.filter((o) => o.groupMemberId !== m.id)
-                            )
+                                'owers',
+                                owers.filter((o) => o.groupMemberId !== m.id)
+                              )
                         }
                       />
                       {m.name}
@@ -212,7 +214,9 @@ export default function ExpenseForm({
                             name={`owers.${index}.splitValue`}
                             control={control}
                           />
-                          <ErrorMessage error={errors.owers?.[index]?.splitValue} />
+                          <ErrorMessage
+                            error={errors.owers?.[index]?.splitValue}
+                          />
                         </>
                       )}
                     </label>
@@ -240,15 +244,13 @@ export default function ExpenseForm({
                 </label>
               ))}
             </RadioGroup>
-            {
-              taxType && (
-                <label>
-                  Tax Amount
-                  <PercentOrMoneyInput name="taxAmount" control={control} />
-                  <ErrorMessage error={errors.taxAmount} />
-                </label>
-              )
-            }
+            {taxType && (
+              <label>
+                Tax Amount
+                <PercentOrMoneyInput name="taxAmount" control={control} />
+                <ErrorMessage error={errors.taxAmount} />
+              </label>
+            )}
 
             <p>Tip</p>
             <ErrorMessage error={errors.tipType} />
@@ -267,15 +269,13 @@ export default function ExpenseForm({
                 </label>
               ))}
             </RadioGroup>
-            {
-              tipType && (
-                <label>
-                  Tip Amount
-                  <PercentOrMoneyInput name="tipAmount" control={control} />
-                  <ErrorMessage error={errors.tipAmount} />
-                </label>
-              )
-            }
+            {tipType && (
+              <label>
+                Tip Amount
+                <PercentOrMoneyInput name="tipAmount" control={control} />
+                <ErrorMessage error={errors.tipAmount} />
+              </label>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-2">

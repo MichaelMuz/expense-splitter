@@ -37,7 +37,9 @@ export function signToken(payload: TokenPayload): string {
  */
 export function verifyToken(token: string): TokenPayload {
   try {
-    const decoded = TokenPayloadSchema.parse(jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGO] }));
+    const decoded = TokenPayloadSchema.parse(
+      jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGO] })
+    );
     return decoded;
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
