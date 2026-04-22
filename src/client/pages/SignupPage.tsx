@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Layout } from '../components/layout/Layout';
 
@@ -17,6 +17,7 @@ import {
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { ErrorMessage } from '../components/ui/form-error';
+import { getRedirectUrl } from '../lib/utils';
 
 const signupFormSchema = signupSchema
   .extend({
@@ -29,6 +30,7 @@ const signupFormSchema = signupSchema
 type SignupForm = z.infer<typeof signupFormSchema>;
 
 export default function SignupPage() {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { signupMutation } = useAuth();
 
@@ -43,7 +45,9 @@ export default function SignupPage() {
 
   const onSubmit = (data: SignupForm) => {
     const { confirmPassword, ...signupData } = data;
-    signupMutation.mutate(signupData, { onSuccess: () => navigate('/groups') });
+    signupMutation.mutate(signupData, {
+      onSuccess: () => navigate(getRedirectUrl(searchParams) ?? '/groups'),
+    });
   };
 
   return (
@@ -54,7 +58,7 @@ export default function SignupPage() {
             <div className="flex justify-between items-center">
               <CardTitle>Sign up</CardTitle>
               <Button asChild variant="link">
-                <Link to="/login">Log in</Link>
+                <Link to={`/login?${searchParams.toString()}`}>Log in</Link>
               </Button>
             </div>
           </CardHeader>

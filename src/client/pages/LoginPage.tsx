@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Layout } from '../components/layout/Layout';
 
@@ -15,8 +15,10 @@ import {
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { ErrorMessage } from '../components/ui/form-error';
+import { getRedirectUrl } from '../lib/utils';
 
 export default function LoginPage() {
+  const [searchParams] = useSearchParams();
   const { loginMutation } = useAuth();
   const navigate = useNavigate();
   const {
@@ -29,7 +31,9 @@ export default function LoginPage() {
   });
 
   const onSubmit = (data: LoginInput) => {
-    loginMutation.mutate(data, { onSuccess: () => navigate('/groups') });
+    loginMutation.mutate(data, {
+      onSuccess: () => navigate(getRedirectUrl(searchParams) ?? '/groups'),
+    });
   };
 
   return (
@@ -40,7 +44,7 @@ export default function LoginPage() {
             <div className="flex justify-between items-center">
               <CardTitle>Login to your account</CardTitle>
               <Button asChild variant="link">
-                <Link to="/signup">Sign up</Link>
+                <Link to={`/signup?${searchParams.toString()}`}>Sign up</Link>
               </Button>
             </div>
           </CardHeader>

@@ -14,3 +14,14 @@ export function addQueryParams(
     .join('&');
   return `${url}?${query}`;
 }
+
+/*
+ * Returns where the next param tells you to navigate, undefined if no redirect param
+ */
+export function getRedirectUrl(searchParams: URLSearchParams) {
+  const nextParam = searchParams.get('next');
+  // avoid malicious redirect
+  return nextParam?.startsWith('/') && !nextParam.startsWith('//')
+    ? nextParam
+    : undefined;
+}
