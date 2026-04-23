@@ -41,7 +41,7 @@ router.patch(
         id: true,
         email: true,
         venmoUsername: true,
-        createdAt: true
+        createdAt: true,
       },
       where: {
         id: userId,

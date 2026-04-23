@@ -34,13 +34,14 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+export const authQueryKey = ['auth', 'me'] as const;
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const queryClient = useQueryClient();
-  const queryKey = ['auth', 'me'];
 
   // Fetch current user if token exists
   const { data: user, isLoading } = useQuery({
-    queryKey,
+    queryKey: authQueryKey,
     queryFn: async () => {
       const response = await api.get('/auth/me');
       const validated = meResponseSchema.parse(response.data);
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Store the user in the query cache on login/signup as source of truth
   const onSuccess = (data: AuthResponse) => {
     setToken(data.token);
-    queryClient.setQueryData(queryKey, data.user);
+    queryClient.setQueryData(authQueryKey, data.user);
   };
   // Hit login endpoint and update the state cache
   const loginMutation = useMutation({
