@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { venmoUsername } from './fields';
 
 const email = z.email('Invalid email address').min(1, 'Email is required');
 
@@ -25,6 +26,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export const userSchema = z.object({
   id: z.uuid(),
   email: email,
+  venmoUsername: venmoUsername,
   createdAt: z.coerce.date(),
 });
 

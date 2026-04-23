@@ -63,6 +63,7 @@ router.post(
       user: {
         id: user.id,
         email: user.email,
+        venmoUsername: user.venmoUsername,
         createdAt: user.createdAt,
       },
     };
@@ -109,6 +110,7 @@ router.post(
       user: {
         id: user.id,
         email: user.email,
+        venmoUsername: user.venmoUsername,
         createdAt: user.createdAt,
       },
     };
@@ -139,6 +141,7 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
     user: {
       id: user.id,
       email: user.email,
+      venmoUsername: user.venmoUsername,
       createdAt: user.createdAt,
     },
   };

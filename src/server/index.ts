@@ -3,6 +3,7 @@ import cors from 'cors';
 import { prisma } from './lib/prisma';
 import { errorHandler } from './middleware/error-handler';
 import authRoutes from './routes/auth';
+import usersRoutes from './routes/users';
 import groupsRoutes from './routes/groups';
 import membersRoutes from './routes/members';
 import expensesRouter from './routes/expenses';
@@ -21,6 +22,7 @@ app.use(monitoringRoutes);
 
 // Route registration
 app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/groups', membersRoutes);
 app.use('/api/groups', expensesRouter);

@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { venmoUsername } from './fields';
 
 // exported for other shared type schemas
 export const memberName = z
@@ -37,6 +38,7 @@ export const membersResponseSchema = z.object({
       user: z
         .object({
           email: z.email(),
+          venmoUsername: venmoUsername,
         })
         .nullable(),
     })

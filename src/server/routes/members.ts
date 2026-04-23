@@ -46,6 +46,7 @@ router.get(
         user: {
           select: {
             email: true,
+            venmoUsername: true,
           },
         },
       },
