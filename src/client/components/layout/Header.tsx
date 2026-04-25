@@ -1,3 +1,4 @@
+import { PiggyBank } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../ui/button';
@@ -6,12 +7,16 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { LogOutIcon, UserIcon } from 'lucide-react';
+import { useState } from 'react';
+import UpdateVenmoDialogForm from '../users/UpdateVenmoDialogForm';
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
+  const [venmoOpen, setVenmoOpen] = useState(false);
 
   return (
     <nav className="flex justify-between items-center px-6 py-3 border-b">
@@ -32,12 +37,20 @@ export function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => setVenmoOpen(true)}>
+                  <PiggyBank /> Venmo username
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className="text-destructive">
                   <LogOutIcon />
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <UpdateVenmoDialogForm
+              open={venmoOpen}
+              onOpenChange={setVenmoOpen}
+            />
           </>
         ) : (
           <>
